@@ -47,7 +47,7 @@ export default class JustifyContentBasics extends Component {
 const styles = StyleSheet.create({
     main: {
         flex: 1,
-        backgroundColor: 'skyblue',
+        backgroundColor: 'red',
         flexDirection: 'column'
     },
 
