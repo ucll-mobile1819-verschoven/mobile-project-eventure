@@ -1,30 +1,70 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component } from 'react';
+import { Alert, AppRegistry, StyleSheet, View, Text, TextInput, Button } from 'react-native';
 
-export default class App extends React.Component {
-  render() {
-    return (
-      <View style={styles.container}>
-          <View style={{flex: 1, backgroundColor: 'powderblue'}}>
-            <Text>This is a Test</Text>
-          </View>
-          <View style={{flex: 3, backgroundColor: 'skyblue'}}>
-              <Text>To see</Text>
-          </View>
-          <View style={{flex: 4, backgroundColor: 'steelblue'}}>
-          <Text>how shit changes</Text>
-      </View>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
-    );
-  }
-}
+export default class JustifyContentBasics extends Component {
+
+    constructor(props){
+        super(props);
+        this.state = {text: ''};
+    }
+    render() {
+        return (
+            // Try setting `justifyContent` to `center`.
+            // Try setting `flexDirection` to `row`.
+            <View style={styles.main}>
+                <View style={styles.title}>
+                    <Text style={{
+                        flex:3
+                    }}>
+                        Eventure
+                    </Text>
+                    <Button
+                        style={{
+                            flex:1,
+                        }}
+                        onPress={()=>{
+                            Alert.alert('Menu Button')
+                        }}
+                    title ="menu"/>
+                </View>
+                <View style={styles.list}>
+
+                </View>
+                <View style={styles.button}>
+                    <Button
+                        onPress={()=>{
+                            Alert.alert('add Button')
+                        }}
+                        title="New Event"/>
+                </View>
+            </View>
+
+
+        );
+    }
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+    main: {
+        flex: 1,
+        backgroundColor: 'skyblue',
+        flexDirection: 'column'
+    },
+
+    title: {
+        flex: 1,
+        backgroundColor: 'steelblue',
+        flexDirection:'row',
+    },
+
+    list: {
+        flex:4
+    },
+
+    button: {
+        flex: 1
+    }
+})
+
+// skip this line if using Create React Native App
+AppRegistry.registerComponent('AwesomeProject', () => JustifyContentBasics);
