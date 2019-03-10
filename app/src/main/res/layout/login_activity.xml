@@ -4,23 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/root"
+    android:background="@drawable/background"
     tools:context=".LoginActivity">
+
+    <ImageView
+        android:src="@drawable/facebook"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/first"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Press the login \n button to login"
-        android:textSize="100px"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/login"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/first"
+        android:textColor="@android:color/white"
+        tools:layout_editor_absoluteX="175dp"
+        tools:layout_editor_absoluteY="491dp" />
 
-    <Button
+    <android.support.constraint.Guideline
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="login"
-        android:text="Login"
-        />
+        android:id="@+id/guideline"
+        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintGuide_begin="85dp"
+        android:orientation="horizontal" />
+
+    <!--android:src="@drawable/ic_sofa"
+        tools:src="@drawable/ic_sofa"-->
+    <TextView
+        android:text="Eventure"
+        android:gravity="center"
+        android:textSize="35dp"
+        android:textColor="@android:color/white"
+        android:id="@+id/logo"
+        android:focusable="true"
+        android:scaleX="2.5"
+        android:scaleY="2.5"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:focusableInTouchMode="true"
+        app:layout_constraintTop_toTopOf="@+id/guideline"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_width="150dp"
+        android:layout_height="150dp"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Our Policy"
+        android:onClick="goToPolicy"
+        app:layout_constraintBottom_toBottomOf="@id/root"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="12dp"
+        tools:layout_editor_absoluteX="176dp"
+        tools:layout_editor_absoluteY="711dp" />
 
 </android.support.constraint.ConstraintLayout>
