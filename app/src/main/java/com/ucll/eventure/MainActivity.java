@@ -4,6 +4,12 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+
+import com.ucll.eventure.Adapters.TabAdapter;
+import com.ucll.eventure.Fragments.FriendsFragment;
+import com.ucll.eventure.Fragments.HomeFragment;
+import com.ucll.eventure.Fragments.PublicFragment;
+
 public class MainActivity extends AppCompatActivity {
     private TabAdapter adapter;
     private TabLayout tabLayout;
