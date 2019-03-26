@@ -11,10 +11,10 @@ public class Event {
     private String startTime;
     private String endTime;
     private boolean viewBool;
-    private ArrayList<String> viewableBy;
-    private ArrayList<String> attendingBy;
 
-    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, boolean viewBool, ArrayList<String> viewableBy, ArrayList<String> attendingBy) {
+    public Event(){}
+
+    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, boolean viewBool) {
         this.eventID = eventID;
         this.eventTitle = eventTitle;
         this.shortDescription = shortDescription;
@@ -23,8 +23,6 @@ public class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.viewBool = viewBool;
-        this.viewableBy = viewableBy;
-        this.attendingBy = attendingBy;
     }
 
 
@@ -90,21 +88,5 @@ public class Event {
 
     public void setViewBool(boolean viewBool) {
         this.viewBool = viewBool;
-    }
-
-    public ArrayList<String> getViewableBy() {
-        return viewableBy;
-    }
-
-    public void setViewableBy(ArrayList<String> viewableBy) {
-        this.viewableBy = viewableBy;
-    }
-
-    public ArrayList<String> getAttendingBy() {
-        return attendingBy;
-    }
-
-    public void setAttendingBy(ArrayList<String> attendingBy) {
-        this.attendingBy = attendingBy;
     }
 }
