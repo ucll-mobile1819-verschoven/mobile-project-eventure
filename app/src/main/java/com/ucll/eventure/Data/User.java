@@ -1,5 +1,4 @@
 package com.ucll.eventure.Data;
-
 public class User {
     private String databaseID;
     private String name;
@@ -44,4 +43,5 @@ public class User {
     public void setMessageID(String messageID) {
         this.messageID = messageID;
     }
+
 }

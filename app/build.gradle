@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        config {
+            keyAlias 'Devs'
+            keyPassword 'uclleventure'
+            storeFile file('C:/Users/Oli/Desktop/UCLL 18-19/Mobiele/mobile-project-eventure/eventure.jks')
+            storePassword 'uclleventure'
+        }
+    }
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.ucll.eventure"
@@ -14,13 +22,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
 
-dependencies{
+dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.android.support:animated-vector-drawable:27.1.1'
+    implementation 'com.android.support:animated-vector-drawable:27.1.1'
     implementation 'com.android.support:exifinterface:27.1.1'
     implementation 'com.android.support:preference-v7:27.1.1'
     implementation 'com.android.support:preference-v14:27.1.1'

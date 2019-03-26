@@ -30,8 +30,6 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 
-import java.util.ArrayList;
-
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;

@@ -5,13 +5,14 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <EditText
+    <TextView
         android:id="@+id/SearchText"
-        android:layout_width="match_parent"
+        android:layout_width="382dp"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_alignParentTop="true"
+        android:contentDescription="Search For Friend"
         android:hint="Search..."
-        android:inputType="textPersonName"
+        android:textAlignment="viewStart"
         android:textSize="24sp"
         android:textStyle="italic" />
 
@@ -20,6 +21,5 @@
         android:layout_width="395dp"
         android:layout_height="match_parent"
         android:layout_below="@id/SearchText" />
-
 
 </RelativeLayout>
