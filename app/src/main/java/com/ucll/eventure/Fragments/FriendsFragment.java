@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +17,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.ucll.eventure.Data.Friends;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
@@ -64,7 +61,7 @@ public class FriendsFragment extends Fragment {
          *      Navigate to the users friend list
          */
 
-        firebase = FirebaseDatabase.getInstance().getReference().child("admin").child("Friends").child(userId);
+        firebase = FirebaseDatabase.getInstance().getReference().child("admin").child("Friend").child(userId);
 
         /**
          *      Add dummy list elements
