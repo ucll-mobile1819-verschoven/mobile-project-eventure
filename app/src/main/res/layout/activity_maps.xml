@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@android:color/white"
+android:orientation="vertical"
+tools:context=".MapsActivity">
+    <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        app:titleTextColor="@android:color/white"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        app:layout_collapseMode="pin"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:theme="@style/MyToolbarTheme">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="30dp"
+            android:layout_gravity="center"
+            android:id="@+id/toolbar_title" />
+    </android.support.v7.widget.Toolbar>
+
+
+
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/map"
+    android:layout_below="@id/toolbar"
+    android:name="com.google.android.gms.maps.SupportMapFragment"
+    android:layout_width="match_parent"
+    android:layout_height="350dp"
+    tools:context=".MapsActivity" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_below="@id/map"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/eventTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Eventtitle"
+                android:textStyle="bold"
+                android:textSize="40dp"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:background="@android:color/black"
+                android:layout_marginRight="45dp"
+                android:layout_height="2dp"/>
+
+            <TextView
+                android:layout_marginTop="6dp"
+                android:id="@+id/eventDescription"
+                android:layout_width="match_parent"
+                android:textSize="15dp"
+                android:layout_height="wrap_content"
+                android:text="this is a dlkdjnidoidjdoihjdoidhodidoidjbodijdbodbodidhbodihbdodidbodhdboduhdbodhdbodihdbodihdbodjhdbojdb" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="18dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/background"
+                    android:layout_marginRight="10dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="21/06/19 21:00"
+                    android:textSize="15dp"
+                    android:layout_marginRight="8dp"
+                    android:id="@+id/startTime"/>
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/background"
+                    android:layout_marginRight="12dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="15dp"
+                    android:text="22/06/19 21:00"
+                    android:id="@+id/endTime"/>
+            </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Going"
+                android:layout_marginTop="20dp"/>
+        </LinearLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

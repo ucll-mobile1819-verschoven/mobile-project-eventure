@@ -1,7 +1,6 @@
 package com.ucll.eventure.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -19,25 +17,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 import com.ucll.eventure.Adapters.EventAdapter;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.R;
-import com.ucll.eventure.ViewEvent;
 
 import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
     private Context context;
-    private LayoutInflater inflater;
     private ArrayList<Event> events;
     private ListView eventsListview;
-    private ArrayList<String> orgs;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.home, container, false);
-        return v;
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.home, container, false);
     }
 
     @Override
@@ -118,20 +111,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void showEvents() {
-        EventAdapter eventAdapter = new EventAdapter(context, events, inflater);
+        EventAdapter eventAdapter = new EventAdapter(getActivity(), events);
         eventsListview.setAdapter(eventAdapter);
-        eventsListview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Event clickedEvent = events.get(position);
-                String event = new Gson().toJson(clickedEvent);
-                if (getActivity() != null) {
-                    Intent i = new Intent(getActivity(), ViewEvent.class);
-                    i.putExtra("event", event);
-                    startActivity(i);
-                }
-            }
-        });
     }
 
     /**
