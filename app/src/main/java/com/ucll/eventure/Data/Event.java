@@ -1,7 +1,5 @@
 package com.ucll.eventure.Data;
 
-import java.util.ArrayList;
-
 public class Event {
     private String eventID;
     private String eventTitle;
@@ -10,11 +8,12 @@ public class Event {
     private String address;
     private String startTime;
     private String endTime;
+    private int attendees;
     private boolean viewBool;
 
     public Event(){}
 
-    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, boolean viewBool) {
+    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean viewBool) {
         this.eventID = eventID;
         this.eventTitle = eventTitle;
         this.shortDescription = shortDescription;
@@ -22,9 +21,9 @@ public class Event {
         this.address = address;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.attendees = attendees;
         this.viewBool = viewBool;
     }
-
 
     public String getEventID() {
         return eventID;
@@ -80,6 +79,14 @@ public class Event {
 
     public void setEndTime(String endTime) {
         this.endTime = endTime;
+    }
+
+    public int getAttendees() {
+        return attendees;
+    }
+
+    public void setAttendees(int attendees) {
+        this.attendees = attendees;
     }
 
     public boolean isViewBool() {

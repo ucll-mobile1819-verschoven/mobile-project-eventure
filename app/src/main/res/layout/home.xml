@@ -4,8 +4,69 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/events_you_are_attending"
+        android:textStyle="bold"
+        android:id="@+id/title1"
+        android:textSize="22dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/black"
+        android:layout_marginLeft="4dp"
+        android:id="@+id/view1"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="12dp"
+        android:id="@+id/attending_listview"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
+        android:layout_height="140dp">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/other_events"
+        android:textStyle="bold"
+        android:textSize="22dp"
+        android:id="@+id/title2"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:id="@+id/view2"
+        android:background="@android:color/black"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"/>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginStart="4dp"
         android:id="@+id/home_listview"/>
 </LinearLayout>

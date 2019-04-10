@@ -1,118 +1,172 @@
-<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    tools:context=".MapsActivity">
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@android:color/white"
-android:orientation="vertical"
-tools:context=".MapsActivity">
     <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/toolbar"
-        app:titleTextColor="@android:color/white"
-        android:textAlignment="center"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/colorPrimary"
         android:gravity="center_vertical"
+        android:textAlignment="center"
         app:layout_collapseMode="pin"
         app:layout_scrollFlags="scroll|enterAlways"
-        app:theme="@style/MyToolbarTheme">
+        app:theme="@style/MyToolbarTheme"
+        app:titleTextColor="@android:color/white">
+
         <TextView
+            android:id="@+id/toolbar_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/app_name"
             android:textColor="@android:color/white"
-            android:textSize="30dp"
-            android:layout_gravity="center"
-            android:id="@+id/toolbar_title" />
+            android:textSize="30dp" />
     </android.support.v7.widget.Toolbar>
 
-
-
-<fragment xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/map"
-    android:layout_below="@id/toolbar"
-    android:name="com.google.android.gms.maps.SupportMapFragment"
-    android:layout_width="match_parent"
-    android:layout_height="350dp"
-    tools:context=".MapsActivity" />
-
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/ConcernedPortionofScreen"
         android:layout_width="match_parent"
-        android:layout_below="@id/map"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        android:layout_weight="0.7"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <!-- Parent FrameLayout 'FL' -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_marginTop="12dp"
-            android:layout_marginLeft="7dp"
-            android:layout_marginRight="7dp"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/eventTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Eventtitle"
-                android:textStyle="bold"
-                android:textSize="40dp"/>
+            android:layout_height="match_parent">
 
-            <View
+            <!-- This is Layout 'LL'
+                 This is where you will place your image & the nice bg
+            -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:background="@android:color/black"
-                android:layout_marginRight="45dp"
-                android:layout_height="2dp"/>
+                android:layout_height="match_parent"
+                android:layout_marginBottom="25dp"
+                android:background="#b2ebf2">
 
-            <TextView
-                android:layout_marginTop="6dp"
-                android:id="@+id/eventDescription"
-                android:layout_width="match_parent"
-                android:textSize="15dp"
-                android:layout_height="wrap_content"
-                android:text="this is a dlkdjnidoidjdoihjdoidhodidoidjbodijdbodbodidhbodihbdodidbodhdboduhdbodhdbodihdbodihdbodjhdbojdb" />
+                <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:map="http://schemas.android.com/apk/res-auto"
+                    xmlns:tools="http://schemas.android.com/tools"
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp"
+                    map:layout_behavior="@string/appbar_scrolling_view_behavior"
+                    tools:context=".MapsActivity" />
+            </LinearLayout>
+
+            <!-- BL = 50dp -->
+            <Button
+                android:layout_width="75dp"
+                android:layout_height="50dp"
+                android:clickable="false"
+                android:id="@+id/attendingcount"
+                android:drawableStart="@drawable/person"
+                android:layout_gravity="bottom|right"
+                android:layout_marginRight="20dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_corners"
+                android:text="@android:string/ok"
+                android:textColor="@android:color/white"
+                android:textSize="18sp" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/RestofScreen"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/map">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="18dp"
-                android:gravity="center"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/background"
-                    android:layout_marginRight="10dp"/>
+                android:layout_marginLeft="7dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginRight="7dp"
+                android:orientation="vertical">
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/eventTitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="21/06/19 21:00"
-                    android:textSize="15dp"
-                    android:layout_marginRight="8dp"
-                    android:id="@+id/startTime"/>
-                <ImageView
-                    android:layout_width="25dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/background"
-                    android:layout_marginRight="12dp"/>
+                    android:gravity="center"
+                    android:text="Eventtitle"
+                    android:textSize="40dp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/startTime"
+                        android:layout_width="130dp"
+                        android:layout_height="22dp"
+                        android:layout_marginRight="18dp"
+                        android:background="@drawable/textview_rounded_corners"
+                        android:gravity="center"
+                        android:text="21/06/19 21:00"
+                        android:textSize="15dp" />
+
+                    <Button
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:id="@+id/going"
+                        android:layout_marginRight="18dp"
+                        android:textStyle="normal"
+                        android:background="@drawable/textview_rounded_corners"
+                        android:gravity="center"
+                        android:onClick="setAttending"
+                        android:text="Going?"
+                        android:textSize="15dp" />
+
+                    <TextView
+                        android:id="@+id/endTime"
+                        android:layout_width="130dp"
+                        android:layout_height="22dp"
+                        android:background="@drawable/textview_rounded_corners"
+                        android:gravity="center"
+                        android:text="22/06/19 21:00"
+                        android:textSize="15dp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@android:color/black" />
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/eventDescription"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="15dp"
-                    android:text="22/06/19 21:00"
-                    android:id="@+id/endTime"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="3dp"
+                    android:text="this is a dlkdjnidoidjdoihjdoidhodidoidjbodijdbodbodidhbodihbdodidbodhdboduhdbodhdbodihdbodihdbodjhdbojdb"
+                    android:textSize="15dp" />
+
             </LinearLayout>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Going"
-                android:layout_marginTop="20dp"/>
-        </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
 
-    </ScrollView>
-
-</RelativeLayout>
+</LinearLayout>
