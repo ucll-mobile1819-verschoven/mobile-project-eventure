@@ -1,7 +1,6 @@
 package com.ucll.eventure.Adapters;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -37,25 +36,25 @@ public class EventAttendingAdapter extends RecyclerView.Adapter<MyHolder>  {
         numCreated++;
         Log.d("RV", "OncreateViewHolder ["+numCreated+"]");
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.row_layout, parent, false);
+                .inflate(R.layout.item_attending_event, parent, false);
 
         MyHolder mh = new MyHolder(v);
         return mh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         Log.d("RV", "OnBindViewHolder");
         Event event = events.get(position);
         Log.d("testmij", String.valueOf(event.getEventTitle()));
         String s = event.getEventTitle();
+        final String events = new Gson().toJson(event);
         holder.txt1.setText(s.substring(0, Math.min(s.length(), 13)));
         holder.txt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String event = new Gson().toJson(events.get(position));
                 Intent i = new Intent(context, MapsActivity.class);
-                i.putExtra("event", event);
+                i.putExtra("event", events);
                 context.startActivity(i);
             }
         });

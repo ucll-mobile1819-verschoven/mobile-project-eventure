@@ -1,5 +1,6 @@
 package com.ucll.eventure;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,9 +22,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.gson.Gson;
+import com.ucll.eventure.Adapters.ImageAdapter;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.EventDatabase;
 import com.ucll.eventure.Data.UserDatabase;
+import com.vansuita.pickimage.bean.PickResult;
+import com.vansuita.pickimage.bundle.PickSetup;
+import com.vansuita.pickimage.dialog.PickImageDialog;
+import com.vansuita.pickimage.listeners.IPickResult;
 
 import org.w3c.dom.Text;
 
@@ -31,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IPickResult {
 
     private GoogleMap mMap;
     private Event eventToDisplay;
@@ -39,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Boolean signedUp;
     private ArrayList<String> events;
     private Button going;
+    private ListView images;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        images = findViewById(R.id.event_images);
         TextView eventTitle = findViewById(R.id.eventTitle);
         TextView eventDescription = findViewById(R.id.eventDescription);
         TextView startTime = findViewById(R.id.startTime);
@@ -102,6 +111,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void getImages(){
+
+    }
+
     public void setAttending(View v) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(eventToDisplay.getEventID()).child("attending").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
 
@@ -132,6 +145,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    public void addImage(View v){
+        PickImageDialog.build(new PickSetup()).show(this);
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -151,5 +168,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // LatLng sydney = new LatLng(-34, 151);
         // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+
+    @Override
+    public void onPickResult(PickResult r) {
+        if (r.getError() == null) {
+            //If you want the Uri.
+            //Mandatory to refresh image from Uri.
+            //getImageView().setImageURI(null);
+
+            //Setting the real returned image.
+            //getImageView().setImageURI(r.getUri());
+
+            //If you want the Bitmap.
+            //getImageView().setImageBitmap(r.getBitmap());
+            ArrayList<Bitmap> bitmaps = new ArrayList<>();
+            bitmaps.add(r.getBitmap());
+            ImageAdapter imageAdapter = new ImageAdapter(getBaseContext(), bitmaps);
+
+            images.setAdapter(imageAdapter);
+
+            //Image path
+            //r.getPath();
+        } else {
+            //Handle possible errors
+            //TODO: do what you have to do with r.getError();
+            Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }

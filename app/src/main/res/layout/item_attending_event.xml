@@ -8,6 +8,7 @@
         android:layout_width="140dp"
         android:layout_height="140dp"
         android:text="Eventtitle"
+        android:textColor="@android:color/white"
         android:background="@drawable/textview_rounded_corners2"
         android:textStyle="bold"
         android:gravity="center"
