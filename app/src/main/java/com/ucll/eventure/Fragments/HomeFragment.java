@@ -1,9 +1,11 @@
 package com.ucll.eventure.Fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +24,7 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.ucll.eventure.Adapters.EventAdapter;
 import com.ucll.eventure.Adapters.EventAttendingAdapter;
+import com.ucll.eventure.AddEventActivity;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.EventDatabase;
 import com.ucll.eventure.R;
@@ -71,6 +74,13 @@ public class HomeFragment extends Fragment {
             title2 = getView().findViewById(R.id.title2);
             view1 = getView().findViewById(R.id.view1);
             view2 = getView().findViewById(R.id.view2);
+            FloatingActionButton fab = getView().findViewById(R.id.fab);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addEvent();
+                }
+            });
             if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null) {
                 getEvents();
             }
@@ -147,6 +157,11 @@ public class HomeFragment extends Fragment {
 
     }
 
+    public void addEvent (){
+        Intent i = new Intent(context, AddEventActivity.class);
+        context.startActivity(i);
+    }
+
     private void showEvents() {
         if (myOtherEvents.size() == 0) {
             view2.setVisibility(View.GONE);
@@ -183,7 +198,7 @@ public class HomeFragment extends Fragment {
      */
     private boolean contains(@NonNull Event event, ArrayList<Event> events) {
         for (Event event1 : events) {
-            if (event1.getEventID().equals(event.getEventID()))
+            if (event1 != null && event1.getEventID().equals(event.getEventID()))
                 return true;
         }
 
