@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class ImageAdapter extends BaseAdapter {
-    // TODO: OPENING IMAGE IN GALLERY FAILS
+    // TODO: OPENING IMAGE IN GALLERY FAILS SOME MODELS?
     private ArrayList<Bitmap> events;
     private Context context;
     private int clicked;

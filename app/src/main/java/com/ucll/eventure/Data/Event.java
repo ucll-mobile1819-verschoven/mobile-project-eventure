@@ -2,6 +2,7 @@ package com.ucll.eventure.Data;
 
 public class Event {
     private String eventID;
+    private String creator;
     private String eventTitle;
     private String shortDescription;
     private String longDescription;
@@ -13,8 +14,9 @@ public class Event {
 
     public Event(){}
 
-    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean viewBool) {
+    public Event(String eventID, String creator, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean viewBool) {
         this.eventID = eventID;
+        this.creator = creator;
         this.eventTitle = eventTitle;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
@@ -31,6 +33,14 @@ public class Event {
 
     public void setEventID(String eventID) {
         this.eventID = eventID;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getEventTitle() {

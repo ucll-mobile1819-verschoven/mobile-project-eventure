@@ -1,5 +1,6 @@
 package com.ucll.eventure;
 
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,10 +12,12 @@ import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.widget.NestedScrollView;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -120,6 +123,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             eventTitle.setText(eventToDisplay.getEventTitle());
             eventDescription.setText(eventToDisplay.getLongDescription());
             startTime.setText(eventToDisplay.getStartTime());
+            Log.d("mystarttime", eventToDisplay.getStartTime());
             endTime.setText(eventToDisplay.getEndTime());
             attendingcount.setText(String.valueOf(eventToDisplay.getAttendees()));
             signedUp = false;
@@ -127,6 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getImageLinks();
             imageAdapter = new ImageAdapter(getBaseContext(), bitmaps);
             images.setAdapter(imageAdapter);
+            setupDelete();
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
         }
@@ -140,7 +145,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             going.setTextColor(Color.parseColor("#FFFFFF"));
             going.setBackground(getResources().getDrawable(R.drawable.rounded_corners));
         } else {
-            if(events == null){
+            if (events == null) {
                 events = new ArrayList<>();
             }
         }
@@ -158,11 +163,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //Move the camera to the user's location and zoom in!
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
         } catch (IOException e) {
+            Log.d("mymaps", e.toString());
             Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void getImageLinks(){
+    private void getImageLinks() {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events")
                 .child(eventToDisplay.getEventID()).child("Images");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -187,9 +193,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    private void getImages(ArrayList<String> imageURLS){
+    private void getImages(ArrayList<String> imageURLS) {
         //imageAdapter = new ImageAdapter(getBaseContext(), bitmaps);
-        for(String link : imageURLS){
+        for (String link : imageURLS) {
             StorageReference httpsReference = FirebaseStorage.getInstance().getReferenceFromUrl(link);
             final long ONE_MEGABYTE = 1024 * 1024;
             httpsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -238,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void addImage(View v){
+    public void addImage(View v) {
         PickImageDialog.build(new PickSetup()).show(this);
     }
 
@@ -256,11 +262,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         addMarker();
-
-        // Add a marker in Sydney and move the camera
-        // LatLng sydney = new LatLng(-34, 151);
-        // mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        // mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -301,9 +302,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
         } else {
-            //Handle possible errors
-            //TODO: do what you have to do with r.getError();
             Toast.makeText(this, r.getError().getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void setupDelete() {
+        ImageButton delete = findViewById(R.id.delete_event);
+        if (eventToDisplay.getCreator().equals(new UserDatabase(getBaseContext()).readFromFile().getDatabaseID())) {
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog diaBox = AskOption();
+                    diaBox.show();
+                }
+            });
+        } else {
+            delete.setVisibility(View.GONE);
         }
     }
 
@@ -321,7 +335,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // generate a random number between
             // 0 to AlphaNumericString variable length
             int index
-                    = (int)(AlphaNumericString.length()
+                    = (int) (AlphaNumericString.length()
                     * Math.random());
 
             // add Character one by one in end of sb
@@ -330,5 +344,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         return sb.toString();
+    }
+
+    private AlertDialog AskOption() {
+        AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
+                //set message, title, and icon
+                .setTitle("Delete")
+                .setMessage("Are you sure you want to delete your event?")
+                .setIcon(R.drawable.delete_black)
+
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(eventToDisplay.getEventID());
+                        ref.removeValue();
+                        finish();
+                        dialog.dismiss();
+                    }
+
+                })
+
+
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
     }
 }

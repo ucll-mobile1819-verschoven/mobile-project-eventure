@@ -25,7 +25,6 @@ public abstract class AppBarStateChangeListener implements AppBarLayout.OnOffset
             }
             mCurrentState = State.COLLAPSED;
         } else {
-            //TODO: FADE OUT
             float fraction2 = ((Math.abs(i)) / ((float) appBarLayout.getTotalScrollRange()));
             Log.d("scroll", String.valueOf(fraction2));
             float delay = 0.1f;

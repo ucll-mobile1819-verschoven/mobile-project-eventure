@@ -49,7 +49,11 @@ public class EventAttendingAdapter extends RecyclerView.Adapter<MyHolder>  {
         Log.d("testmij", String.valueOf(event.getEventTitle()));
         String s = event.getEventTitle();
         final String events = new Gson().toJson(event);
-        holder.txt1.setText(s.substring(0, Math.min(s.length(), 13)));
+        if(s.length() <= 14){
+            holder.txt1.setText(s.substring(0, Math.min(s.length(), 14)));
+        } else {
+            holder.txt1.setText(s.substring(0, Math.min(s.length(), 14)) + "...");
+        }
         holder.txt1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

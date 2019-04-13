@@ -31,8 +31,6 @@ import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
-//TODO: WRITE CLOUD FUNCTION TO COUNT ATTENDEES
-//TODO: ADD EVENTS OPTION
 //TODO: FILTER EVENTS BASED ON PRIVATE OR NOT
 public class HomeFragment extends Fragment {
     private Context context;
