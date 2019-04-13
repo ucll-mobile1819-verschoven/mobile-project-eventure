@@ -1,6 +1,7 @@
 package com.ucll.eventure.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +22,6 @@ public class FriendsAdapter extends BaseAdapter {
     private Context context;
     private LayoutInflater inflater;
 
-    public FriendsAdapter(){
-
-    }
-
     public FriendsAdapter(Context context, List<Friend> friends, LayoutInflater inflater){
         this.friends = friends; this.context=context; this.inflater=inflater;
     }
@@ -36,7 +33,7 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public Friend getItem(int i) {
         return friends.get(i);
     }
 
@@ -56,12 +53,15 @@ public class FriendsAdapter extends BaseAdapter {
         TextView eventAmount = vi.findViewById(R.id.event_amount);
         LinearLayout friend = vi.findViewById(R.id.friend);
 
+        Log.d("getFriendsTag", String.valueOf(friends.get(i) != null));
         if(friends.get(i) != null){
             final Friend toDisplay = friends.get(i);
 
+            Log.d("getFriendsTag", "we are in the adapter");
+
 
             userName.setText(toDisplay.getName());
-            eventAmount.setText(toDisplay.getEventAmount());
+            eventAmount.setText(String.valueOf(toDisplay.getEventAmount()));
 
             friend.setOnClickListener(
                     new View.OnClickListener() {
