@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +35,7 @@ public class PublicFragment extends Fragment {
     private Context context;
     private ArrayList<Event> publicEvents;
     private ListView otherEventsListView;
+    private EventAdapter eventAdapter;
 
     //TODO: SET PUBLIC EVENTS TO DIFFERENT NODE FOR EXTRA SECURITY?
 
@@ -96,6 +96,8 @@ public class PublicFragment extends Fragment {
         } else {
             publicEvents = new ArrayList<>();
             publicEvents.clear();
+            eventAdapter = new EventAdapter(getActivity(), publicEvents);
+            otherEventsListView.setAdapter(eventAdapter);
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
@@ -107,8 +109,7 @@ public class PublicFragment extends Fragment {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Event event = dataSnapshot.getValue(t2);
-                        Log.d("tellme", String.valueOf(event.isTotallyVisible()));
-                        if (event != null && event.isTotallyVisible()) {
+                        if (event != null && event.isTotallyVisible() && !contains(event, publicEvents)) {
                             if (!goingEvents.contains(event.getEventID()) && !declinedEvents.contains(event.getEventID())) {
                                     publicEvents.add(event);
                             }
@@ -133,7 +134,15 @@ public class PublicFragment extends Fragment {
 
     private void showEvents() {
         otherEventsListView.setVisibility(View.VISIBLE);
-        EventAdapter eventAdapter = new EventAdapter(getActivity(), publicEvents);
-        otherEventsListView.setAdapter(eventAdapter);
+        eventAdapter.notifyDataSetChanged();
+    }
+
+    private boolean contains(@NonNull Event event, ArrayList<Event> events) {
+        for (Event event1 : events) {
+            if (event1 != null && event1.getEventID().equals(event.getEventID()))
+                return true;
+        }
+
+        return false;
     }
 }

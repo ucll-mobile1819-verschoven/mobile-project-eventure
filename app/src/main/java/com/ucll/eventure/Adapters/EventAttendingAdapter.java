@@ -22,12 +22,11 @@ public class EventAttendingAdapter extends RecyclerView.Adapter<MyHolder>  {
     private ArrayList<Event> events;
     private Activity context;
 
+    //TODO: ADD SPACING BETWEEN RECYCLERVIEW ITEMS
     public EventAttendingAdapter(Activity context, ArrayList<Event> events){
         this.numCreated = 0;
         this.context = context;
         this.events = events;
-
-        Log.d("testmij", String.valueOf(events.size()));
     }
 
     @NonNull
@@ -46,7 +45,6 @@ public class EventAttendingAdapter extends RecyclerView.Adapter<MyHolder>  {
     public void onBindViewHolder(@NonNull MyHolder holder, int position) {
         Log.d("RV", "OnBindViewHolder");
         Event event = events.get(position);
-        Log.d("testmij", String.valueOf(event.getEventTitle()));
         String s = event.getEventTitle();
         final String events = new Gson().toJson(event);
         if(s.length() <= 14){

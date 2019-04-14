@@ -50,6 +50,8 @@ public class HomeFragment extends Fragment {
     private TextView title2;
     private View view1;
     private View view2;
+    private EventAdapter eventAdapter;
+    private EventAttendingAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -116,7 +118,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    private void getInvites(){
+    private void getInvites() {
         inviteIDs = new ArrayList<>();
         inviteIDs.clear();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(new UserDatabase(getActivity()).readFromFile().getDatabaseID());
@@ -128,7 +130,7 @@ public class HomeFragment extends Fragment {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String eventID = dataSnapshot.getValue(t2);
-                    if(!inviteIDs.contains(eventID))
+                    if (!inviteIDs.contains(eventID))
                         inviteIDs.add(eventID);
 
                 }
@@ -157,9 +159,17 @@ public class HomeFragment extends Fragment {
             myOtherEvents.clear();
             myAttendingEvents = new ArrayList<>();
             myAttendingEvents.clear();
+            eventAdapter = new EventAdapter(getActivity(), myOtherEvents);
+            otherEventsListView.setAdapter(eventAdapter);
+            adapter = new EventAttendingAdapter(getActivity(), myAttendingEvents);
+            attendingListView.setAdapter(adapter);
+
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-            for(String id : inviteIDs){
+            inviteIDs.addAll(goingEvents);
+            Log.d("HomeFrag", String.valueOf(goingEvents.size()) + " going");
+            Log.d("HomeFrag", String.valueOf(inviteIDs.size()) + "invited");
+            for (String id : inviteIDs) {
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(id);
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -167,20 +177,23 @@ public class HomeFragment extends Fragment {
                         GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
                         };
 
-                            Event event = snapshot.getValue(t2);
-                            if (event != null) {
-                                if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                                    if (!goingEvents.contains(event.getEventID()) && !declinedEvents.contains(event.getEventID()))
-                                        myOtherEvents.add(event);
-                                    else
+                        Event event = snapshot.getValue(t2);
+                        if (event != null) {
+                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                                if (!declinedEvents.contains(event.getEventID())) {
+                                    if (goingEvents.contains(event.getEventID())) {
                                         myAttendingEvents.add(event);
+                                    } else {
+                                        myOtherEvents.add(event);
+
+                                    }
                                 }
                             }
 
 
-
-                        if (myOtherEvents != null && myAttendingEvents != null) {
-                            showEvents();
+                            if (myOtherEvents != null && myAttendingEvents != null) {
+                                showEvents();
+                            }
                         }
                     }
 
@@ -195,7 +208,7 @@ public class HomeFragment extends Fragment {
 
     }
 
-    public void addEvent (){
+    public void addEvent() {
         Intent i = new Intent(context, AddEventActivity.class);
         context.startActivity(i);
     }
@@ -209,8 +222,7 @@ public class HomeFragment extends Fragment {
             view2.setVisibility(View.VISIBLE);
             title2.setVisibility(View.VISIBLE);
             otherEventsListView.setVisibility(View.VISIBLE);
-            EventAdapter eventAdapter = new EventAdapter(getActivity(), myOtherEvents);
-            otherEventsListView.setAdapter(eventAdapter);
+            eventAdapter.notifyDataSetChanged();
         }
 
         if (myAttendingEvents.size() == 0) {
@@ -223,8 +235,7 @@ public class HomeFragment extends Fragment {
             attendingListView.setVisibility(View.VISIBLE);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
             attendingListView.setLayoutManager(layoutManager);
-            EventAttendingAdapter adapter = new EventAttendingAdapter(getActivity(), myAttendingEvents);
-            attendingListView.setAdapter(adapter);
+            adapter.notifyDataSetChanged();
         }
     }
 
