@@ -48,10 +48,10 @@ public class EventDatabase {
             }
         } catch (FileNotFoundException e) {
             Log.d("LocalDBreadFromFile()", "the events.txt was not found");
-            return null;
+            return new ArrayList<>();
         } catch (IOException e) {
             Log.d("LocalDBreadFromFile()", "IOException for userobject");
-            return null;
+            return new ArrayList<>();
         }
 
         if(eventIDs == null)
