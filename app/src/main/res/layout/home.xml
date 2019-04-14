@@ -54,7 +54,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/other_events"
+                android:text="@string/invite_events"
                 android:textStyle="bold"
                 android:textSize="22dp"
                 android:id="@+id/title2"

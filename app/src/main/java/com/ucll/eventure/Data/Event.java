@@ -10,11 +10,11 @@ public class Event {
     private String startTime;
     private String endTime;
     private int attendees;
-    private boolean viewBool;
+    private boolean totallyVisible;
 
     public Event(){}
 
-    public Event(String eventID, String creator, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean viewBool) {
+    public Event(String eventID, String creator, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean totallyVisible) {
         this.eventID = eventID;
         this.creator = creator;
         this.eventTitle = eventTitle;
@@ -24,7 +24,7 @@ public class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.attendees = attendees;
-        this.viewBool = viewBool;
+        this.totallyVisible = totallyVisible;
     }
 
     public String getEventID() {
@@ -99,11 +99,11 @@ public class Event {
         this.attendees = attendees;
     }
 
-    public boolean isViewBool() {
-        return viewBool;
+    public boolean isTotallyVisible() {
+        return totallyVisible;
     }
 
-    public void setViewBool(boolean viewBool) {
-        this.viewBool = viewBool;
+    public void setTotallyVisible(boolean viewBool) {
+        this.totallyVisible = viewBool;
     }
 }

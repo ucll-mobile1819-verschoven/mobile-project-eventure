@@ -10,7 +10,7 @@
 
 
     <string name="events_you_are_attending">Events You Are Attending</string>
-    <string name="other_events">Other Events</string>
+    <string name="invite_events">Event Invites</string>
 
 
 
@@ -26,4 +26,5 @@
     <string name="event_title">Event Title</string>
     <string name="add_event">Add Event</string>
     <string name="add_pics">Add pictures of the event below. To save a picture click it twice.</string>
+    <string name="publics">Public Events</string>
 </resources>

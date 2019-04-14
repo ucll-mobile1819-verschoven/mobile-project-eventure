@@ -14,10 +14,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-public class EventDatabase {
+public class GoingDatabase {
     private Context context;
 
-    public EventDatabase(Context context) {
+    public GoingDatabase(Context context) {
         this.context = context;
     }
 

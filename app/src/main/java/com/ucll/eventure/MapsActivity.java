@@ -30,10 +30,8 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,22 +44,18 @@ import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.ucll.eventure.Adapters.ImageAdapter;
 import com.ucll.eventure.Data.Event;
-import com.ucll.eventure.Data.EventDatabase;
+import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
 import com.vansuita.pickimage.listeners.IPickResult;
 
-import org.w3c.dom.Text;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IPickResult {
 
@@ -75,6 +69,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageAdapter imageAdapter;
     private ArrayList<String> links;
     private ArrayList<Bitmap> bitmaps;
+
+    //TODO: MAKE NOT INTERESTED FUNCTION
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,7 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void setUpView() {
-        events = new EventDatabase(getApplicationContext()).readFromFile();
+        events = new GoingDatabase(getApplicationContext()).readFromFile();
         if (events != null && events.contains(eventToDisplay.getEventID())) {
             signedUp = true;
             going.setText("Going");
@@ -222,7 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 ref.setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
                 attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() + 1));
                 events.add(eventToDisplay.getEventID());
-                new EventDatabase(getApplicationContext()).writeToFile(events);
+                new GoingDatabase(getApplicationContext()).writeToFile(events);
                 signedUp = true;
 
                 going.setText("Going");
@@ -233,7 +229,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 signedUp = false;
                 ref.removeValue();
                 events.remove(eventToDisplay.getEventID());
-                new EventDatabase(getApplicationContext()).writeToFile(events);
+                new GoingDatabase(getApplicationContext()).writeToFile(events);
                 attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() - 1));
                 going.setText("Going?");
                 going.setTextColor(Color.parseColor("#000000"));

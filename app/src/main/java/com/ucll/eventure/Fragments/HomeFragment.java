@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,19 +27,25 @@ import com.google.firebase.database.ValueEventListener;
 import com.ucll.eventure.Adapters.EventAdapter;
 import com.ucll.eventure.Adapters.EventAttendingAdapter;
 import com.ucll.eventure.AddEventActivity;
+import com.ucll.eventure.Data.DeclineDatabase;
 import com.ucll.eventure.Data.Event;
-import com.ucll.eventure.Data.EventDatabase;
+import com.ucll.eventure.Data.GoingDatabase;
+import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
 //TODO: FILTER EVENTS BASED ON PRIVATE OR NOT
+//TODO: PLACEHOLDER TILL EVENTS ARE LOADED?
+//TODO: Event Requests
+
 public class HomeFragment extends Fragment {
     private Context context;
     private ArrayList<Event> myOtherEvents;
     private ArrayList<Event> myAttendingEvents;
     private ListView otherEventsListView;
     private RecyclerView attendingListView;
+    private ArrayList<String> inviteIDs;
     private TextView title1;
     private TextView title2;
     private View view1;
@@ -80,7 +88,7 @@ public class HomeFragment extends Fragment {
                 }
             });
             if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null) {
-                getEvents();
+                getInvites();
             }
         }
     }
@@ -101,11 +109,41 @@ public class HomeFragment extends Fragment {
             view1 = getView().findViewById(R.id.view1);
             view2 = getView().findViewById(R.id.view2);
             if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null) {
-                getEvents();
+                getInvites();
             }
         }
 
 
+    }
+
+    private void getInvites(){
+        inviteIDs = new ArrayList<>();
+        inviteIDs.clear();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(new UserDatabase(getActivity()).readFromFile().getDatabaseID());
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                GenericTypeIndicator<String> t2 = new GenericTypeIndicator<String>() {
+                };
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String eventID = dataSnapshot.getValue(t2);
+                    if(!inviteIDs.contains(eventID))
+                        inviteIDs.add(eventID);
+
+                }
+
+                if (inviteIDs != null) {
+                    getEvents();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
     }
 
     /**
@@ -119,38 +157,40 @@ public class HomeFragment extends Fragment {
             myOtherEvents.clear();
             myAttendingEvents = new ArrayList<>();
             myAttendingEvents.clear();
-            final ArrayList<String> goingEvents = new EventDatabase(getActivity()).readFromFile();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
-            ref.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
-                    };
+            final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
+            final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
+            for(String id : inviteIDs){
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(id);
+                ref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
+                        };
 
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Event event = dataSnapshot.getValue(t2);
-                        if (event != null) {
-                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                                if (!goingEvents.contains(event.getEventID()))
-                                    myOtherEvents.add(event);
-                                else
-                                    myAttendingEvents.add(event);
+                            Event event = snapshot.getValue(t2);
+                            if (event != null) {
+                                if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                                    if (!goingEvents.contains(event.getEventID()) && !declinedEvents.contains(event.getEventID()))
+                                        myOtherEvents.add(event);
+                                    else
+                                        myAttendingEvents.add(event);
+                                }
                             }
+
+
+
+                        if (myOtherEvents != null && myAttendingEvents != null) {
+                            showEvents();
                         }
-
                     }
 
-                    if (myOtherEvents != null && myAttendingEvents != null) {
-                        showEvents();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
-                }
-
-            });
+                });
+            }
         }
 
     }
