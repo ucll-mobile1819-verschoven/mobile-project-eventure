@@ -46,6 +46,8 @@
                 android:gravity="center"
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 app:theme="@style/MyToolbarTheme"
                 app:titleTextColor="@android:color/white">
 
@@ -60,15 +62,6 @@
                     android:textSize="30dp" />
 
 
-                <ImageButton
-                    android:layout_width="30dp"
-                    android:id="@+id/delete_event"
-                    android:layout_height="30dp"
-                    android:background="@drawable/delete"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_gravity="center_horizontal|end"
-                    android:layout_marginEnd="15dp" />
 
 
             </android.support.v7.widget.Toolbar>

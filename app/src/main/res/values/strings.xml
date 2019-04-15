@@ -12,10 +12,10 @@
     <string name="events_you_are_attending">Events You Are Attending</string>
     <string name="invite_events">Event Invites</string>
 
-
-
-
-
+    <string name="delete">Delete</string>
+    <string name="askdelete">Are you sure you want to delete your event? This cannot be undone</string>
+    <string name="decline">Decline</string>
+    <string name="askdecline">Are you sure you want to hide this event? This cannot be undone</string>
 
 
     <string name="event_visibility">Event is visible to: </string>
@@ -27,4 +27,7 @@
     <string name="add_event">Add Event</string>
     <string name="add_pics">Add pictures of the event below. To save a picture click it twice.</string>
     <string name="publics">Public Events</string>
+
+    <string name="your_friends">Your Friends</string>
+    <string name="friend_groups">Your Friend Groups</string>
 </resources>

@@ -261,7 +261,7 @@
         android:layout_margin="16dp"
         android:clickable="true"
         android:onClick="checkInput"
-        app:srcCompat="@drawable/continue_button"
+        android:src="@drawable/continue_button"
         android:focusable="true" />
 
 </FrameLayout>

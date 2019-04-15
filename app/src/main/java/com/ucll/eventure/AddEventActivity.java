@@ -1,31 +1,43 @@
 package com.ucll.eventure;
 
+import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.ucll.eventure.Data.Event;
+import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
-
 public class AddEventActivity extends AppCompatActivity {
     private EditText eventTitle, shortDescription, longDescription, countryCity, streetNumber, startTime, endTime;
     private Spinner visibility;
+    private ArrayList<String> visibilityOptions;
+    private HashMap<String, ArrayList<String>> groups;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+        groups = new HashMap<>();
 
         setupView();
     }
@@ -40,7 +52,42 @@ public class AddEventActivity extends AppCompatActivity {
         endTime = findViewById(R.id.add_event_endtime);
         visibility = findViewById(R.id.add_event_visible_to);
 
-        //TODO: SET SPINNER ADAPTER
+        visibilityOptions = new ArrayList<>();
+        visibilityOptions.add("Choose who the event will be visible for");
+        visibilityOptions.add("Private");
+        visibilityOptions.add("Public");
+
+        getFriendGroups(getApplicationContext());
+    }
+
+    private void getFriendGroups(final Context context){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
+                .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    visibilityOptions.add(dataSnapshot.getKey());
+                    ArrayList<String> ids = new ArrayList<>();
+                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                        ids.add(dataSnapshot1.getKey());
+                    }
+
+                    groups.put(dataSnapshot.getKey(), ids);
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                        android.R.layout.simple_spinner_item,visibilityOptions);
+                visibility.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
+
     }
 
     public void checkInput(View view) {
@@ -52,11 +99,10 @@ public class AddEventActivity extends AppCompatActivity {
         String start_time = startTime.getText().toString();
         String end_time = endTime.getText().toString();
 
-        //TODO: GET VISIBILITY INFO & INCORPORATE IN EVENT OBJECT
         if (!event_Title.isEmpty() && !short_description.isEmpty() && !long_description.isEmpty() &&
-                !country_and_city.isEmpty() && !street_and_number.isEmpty() && !start_time.isEmpty() && !end_time.isEmpty()) {
+                !country_and_city.isEmpty() && !street_and_number.isEmpty() && !start_time.isEmpty() && !end_time.isEmpty() && !visibility.getSelectedItem().toString().equals("Choose who the event will be visible for")) {
             if (validCountryAndCity(country_and_city) && validStreetAndNumber(street_and_number) && validTime(start_time, end_time)) {
-                submitToDatabase(new Event("eventID", new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID(), event_Title,
+                checkBeforesubmitToDatabase(new Event("eventID", new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID(), event_Title,
                         short_description, long_description, country_and_city + ", " + street_and_number, start_time, end_time, 0, false));
             } else {
                 Toast.makeText(getApplicationContext(), "The format of your input is incorrect, please follow the hints", Toast.LENGTH_LONG).show();
@@ -66,13 +112,52 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
-    private void submitToDatabase(Event toSubmit) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
+    private void checkBeforesubmitToDatabase(Event toSubmit) {
+        if(visibility.getSelectedItem().toString().equals("Public")){
+            simpleSubmitToDatabase(toSubmit, "PublicEvents");
+        } else {
+            if(visibility.getSelectedItem().toString().equals("Private")){
+                simpleSubmitToDatabase(toSubmit, "PrivateEvents");
+            } else {
+                setVisibility(simpleSubmitToDatabase(toSubmit, "PrivateEvents"), groups.get(visibility.getSelectedItem().toString()));
+            }
+        }
+
+        finish();
+    }
+
+    private String simpleSubmitToDatabase(Event toSubmit, String node){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(node);
         String id = ref.push().getKey();
         toSubmit.setEventID(id);
         ref.child(id).setValue(toSubmit);
 
-        finish();
+        ArrayList<String> going = new GoingDatabase(getApplicationContext()).readFromFile();
+        going.add(toSubmit.getEventID());
+        new GoingDatabase(getApplicationContext()).writeToFile(going);
+
+        String userID = new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID();
+        ref.child(id).child("attending").child(userID).setValue(userID);
+
+        return id;
+    }
+
+    private void setVisibility(String nodeID, ArrayList<String> ids){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(nodeID).child("visibleTo");
+        for(String id : ids){
+            ref.child(id).setValue(id);
+        }
+
+        String myID = new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID();
+        ref.child(myID).setValue(myID);
+        sendInvites(nodeID, ids);
+    }
+
+    private void sendInvites(String nodeID, ArrayList<String> ids){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites");
+        for(String id : ids){
+            ref.child(id).child(nodeID).setValue(nodeID);
+        }
     }
 
     private Boolean validTime(String start, String end) {

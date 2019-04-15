@@ -1,6 +1,7 @@
 package com.ucll.eventure;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -11,9 +12,14 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -43,6 +49,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.ucll.eventure.Adapters.ImageAdapter;
+import com.ucll.eventure.Data.DeclineDatabase;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
@@ -56,8 +63,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Delayed;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, IPickResult {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, IPickResult {
 
     private GoogleMap mMap;
     private Event eventToDisplay;
@@ -70,8 +78,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ArrayList<String> links;
     private ArrayList<Bitmap> bitmaps;
     private String visibility;
-
-    //TODO: MAKE NOT INTERESTED FUNCTION
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +101,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView endTime = findViewById(R.id.endTime);
         attendingcount = findViewById(R.id.attendingcount);
         going = findViewById(R.id.going);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setOverflowIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.menu));
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         NestedScrollView scrollView = findViewById(R.id.scrollEvent);
         scrollView.scrollTo(0, 0);
@@ -132,7 +143,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             getImageLinks();
             imageAdapter = new ImageAdapter(getBaseContext(), bitmaps);
             images.setAdapter(imageAdapter);
-            setupDelete();
         } else {
             Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
         }
@@ -151,6 +161,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.maps_author_menu, menu);
+        if(eventToDisplay.getCreator().equals(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID())){
+            menu.getItem(0).setVisible(true);
+            menu.getItem(1).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_delete_event:
+                AlertDialog diaBox = AskOption(getString(R.string.delete), getString(R.string.askdelete), R.drawable.delete_black, 0);
+                diaBox.show();
+                break;
+            case R.id.menu_hide_event:
+                diaBox = AskOption(getString(R.string.decline), getString(R.string.askdecline), R.drawable.not_visible, 1);
+                diaBox.show();
+                break;
+            case R.id.menu_invite_friends:
+                inviteFriends();
+                break;
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void inviteFriends(){
+        String event = new Gson().toJson(eventToDisplay);
+        Intent i = new Intent(this, InviteFriendsActivity.class);
+        i.putExtra("event", event);
+        startActivity(i);
+    }
+
 
     private void addMarker() {
         mMap.clear();
@@ -309,20 +359,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private void setupDelete() {
-        ImageButton delete = findViewById(R.id.delete_event);
-        if (eventToDisplay.getCreator().equals(new UserDatabase(getBaseContext()).readFromFile().getDatabaseID())) {
-            delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AlertDialog diaBox = AskOption();
-                    diaBox.show();
-                }
-            });
-        } else {
-            delete.setVisibility(View.GONE);
-        }
-    }
 
     public String getRandomString() {
         // chose a Character random from this String
@@ -349,18 +385,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return sb.toString();
     }
 
-    private AlertDialog AskOption() {
+    //0 -> Delete
+    //1 -> Decline/Hide
+    private AlertDialog AskOption(String title, String whatToAsk, int resource, final int choose) {
         AlertDialog myQuittingDialogBox = new AlertDialog.Builder(this)
                 //set message, title, and icon
-                .setTitle("Delete")
-                .setMessage("Are you sure you want to delete your event?")
-                .setIcon(R.drawable.delete_black)
+                .setTitle(title)
+                .setMessage(whatToAsk)
+                .setIcon(resource)
 
-                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID());
-                        ref.removeValue();
+                        if(choose == 0){
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID());
+                            ref.removeValue();
+                        } else {
+                            ArrayList<String> towrite = new DeclineDatabase(getApplicationContext()).readFromFile();
+                            towrite.add(eventToDisplay.getEventID());
+                            new DeclineDatabase(getApplicationContext()).writeToFile(towrite);
+                        }
+
                         finish();
                         dialog.dismiss();
                     }
@@ -368,7 +413,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 })
 
 
-                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
                         dialog.dismiss();

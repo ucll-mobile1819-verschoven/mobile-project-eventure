@@ -33,10 +33,7 @@ import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
-
-//TODO: FILTER EVENTS BASED ON PRIVATE OR NOT
 //TODO: PLACEHOLDER TILL EVENTS ARE LOADED?
-//TODO: Event Requests
 
 public class HomeFragment extends Fragment {
     private Context context;
@@ -161,6 +158,7 @@ public class HomeFragment extends Fragment {
             attendingListView.setAdapter(adapter);
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
+            inviteIDs.addAll(goingEvents);
             for (String id : inviteIDs) {
 
                 DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(id);
@@ -170,18 +168,18 @@ public class HomeFragment extends Fragment {
                         GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
                         };
 
-                            Event event = snapshot.getValue(t2);
-                            if (event != null) {
-                                if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                                    if (!declinedEvents.contains(event.getEventID())) {
-                                        if (goingEvents.contains(event.getEventID())) {
-                                            myAttendingEvents.add(event);
-                                        } else {
-                                            myOtherEvents.add(event);
+                        Event event = snapshot.getValue(t2);
+                        if (event != null) {
+                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                                if (!declinedEvents.contains(event.getEventID())) {
+                                    if (goingEvents.contains(event.getEventID())) {
+                                        myAttendingEvents.add(event);
+                                    } else {
+                                        myOtherEvents.add(event);
 
-                                        }
                                     }
                                 }
+                            }
 
 
                         }
@@ -194,7 +192,8 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("eventure", databaseError.getMessage());
+                        //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
                     }
 
                 });
