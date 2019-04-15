@@ -17,7 +17,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.crashlytics.android.Crashlytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -136,7 +135,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 if (inviteIDs != null) {
-                    getEvents();
+                    getPrivateEvents();
                 }
             }
 
@@ -148,10 +147,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    /**
-     * Get's events from firebase
-     */
-    private void getEvents() {
+    private void getPrivateEvents() {
         if (getActivity() == null) {
             Toast.makeText(context, getString(R.string.wrong), Toast.LENGTH_LONG).show();
         } else {
@@ -163,37 +159,36 @@ public class HomeFragment extends Fragment {
             otherEventsListView.setAdapter(eventAdapter);
             adapter = new EventAttendingAdapter(getActivity(), myAttendingEvents);
             attendingListView.setAdapter(adapter);
-
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-            inviteIDs.addAll(goingEvents);
-            Log.d("HomeFrag", String.valueOf(goingEvents.size()) + " going");
-            Log.d("HomeFrag", String.valueOf(inviteIDs.size()) + "invited");
             for (String id : inviteIDs) {
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(id);
+
+                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(id);
                 ref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
                         };
 
-                        Event event = snapshot.getValue(t2);
-                        if (event != null) {
-                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                                if (!declinedEvents.contains(event.getEventID())) {
-                                    if (goingEvents.contains(event.getEventID())) {
-                                        myAttendingEvents.add(event);
-                                    } else {
-                                        myOtherEvents.add(event);
+                            Event event = snapshot.getValue(t2);
+                            if (event != null) {
+                                if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                                    if (!declinedEvents.contains(event.getEventID())) {
+                                        if (goingEvents.contains(event.getEventID())) {
+                                            myAttendingEvents.add(event);
+                                        } else {
+                                            myOtherEvents.add(event);
 
+                                        }
                                     }
                                 }
-                            }
 
 
-                            if (myOtherEvents != null && myAttendingEvents != null) {
-                                showEvents();
-                            }
+                        }
+
+                        if (myOtherEvents != null && myAttendingEvents != null) {
+                            getEvents();
+                            Log.d("interest", "getEvents called");
                         }
                     }
 
@@ -205,6 +200,50 @@ public class HomeFragment extends Fragment {
                 });
             }
         }
+    }
+
+    /**
+     * Get's events from firebase
+     */
+    private void getEvents() {
+        if (getActivity() == null) {
+            Toast.makeText(context, getString(R.string.wrong), Toast.LENGTH_LONG).show();
+        } else {
+            final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
+            final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents");
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
+                    };
+
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Event event = dataSnapshot.getValue(t2);
+                        if (event != null) {
+                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                                if (!declinedEvents.contains(event.getEventID())) {
+                                    if (goingEvents.contains(event.getEventID())) {
+                                        myAttendingEvents.add(event);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (myOtherEvents != null && myAttendingEvents != null) {
+                        showEvents();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            });
+        }
 
     }
 
@@ -214,6 +253,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void showEvents() {
+        Log.d("interest", "called");
         if (myOtherEvents.size() == 0) {
             view2.setVisibility(View.GONE);
             title2.setVisibility(View.GONE);

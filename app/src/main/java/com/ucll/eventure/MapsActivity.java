@@ -69,6 +69,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ImageAdapter imageAdapter;
     private ArrayList<String> links;
     private ArrayList<Bitmap> bitmaps;
+    private String visibility;
 
     //TODO: MAKE NOT INTERESTED FUNCTION
 
@@ -115,7 +116,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //GET EVENT TO DISPLAY
         if (getIntent().getStringExtra("event") != null) {
             eventToDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
-
+            if(eventToDisplay.isTotallyVisible()){
+                visibility = "PublicEvents";
+            } else {
+                visibility = "PrivateEvents";
+            }
             eventTitle.setText(eventToDisplay.getEventTitle());
             eventDescription.setText(eventToDisplay.getLongDescription());
             startTime.setText(eventToDisplay.getStartTime());
@@ -152,12 +157,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         try {
+            if(eventToDisplay != null){
             List<Address> addresses = geocoder.getFromLocationName(eventToDisplay.getAddress(), 1);
-            LatLng sydney = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-            mMap.addMarker(new MarkerOptions().position(sydney).title("The Location"));
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-            //Move the camera to the user's location and zoom in!
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+                LatLng sydney = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                mMap.addMarker(new MarkerOptions().position(sydney).title("The Location"));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                //Move the camera to the user's location and zoom in!
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+            }
         } catch (IOException e) {
             Log.d("mymaps", e.toString());
             Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
@@ -165,7 +172,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     private void getImageLinks() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events")
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility)
                 .child(eventToDisplay.getEventID()).child("Images");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -211,7 +218,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void setAttending(View v) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(eventToDisplay.getEventID()).child("attending").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID()).child("attending").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
 
         if (eventToDisplay != null) {
             if (eventToDisplay != null && !signedUp) {
@@ -267,7 +274,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             bitmaps.add(r.getBitmap());
             imageAdapter.notifyDataSetChanged();
 
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("Events")
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(visibility)
                     .child(eventToDisplay.getEventID()).child(getRandomString());
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             r.getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -286,7 +293,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events")
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility)
                                     .child(eventToDisplay.getEventID()).child("Images")
                                     .child(getRandomString());
                             ref.setValue(uri.toString());
@@ -352,7 +359,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events").child(eventToDisplay.getEventID());
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID());
                         ref.removeValue();
                         finish();
                         dialog.dismiss();

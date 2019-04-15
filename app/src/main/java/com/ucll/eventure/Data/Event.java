@@ -103,7 +103,7 @@ public class Event {
         return totallyVisible;
     }
 
-    public void setTotallyVisible(boolean viewBool) {
-        this.totallyVisible = viewBool;
+    public void setTotallyVisible(boolean totallyVisible) {
+        this.totallyVisible = totallyVisible;
     }
 }

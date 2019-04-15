@@ -1,18 +1,14 @@
 package com.ucll.eventure.Fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -22,8 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.ucll.eventure.Adapters.EventAdapter;
-import com.ucll.eventure.Adapters.EventAttendingAdapter;
-import com.ucll.eventure.AddEventActivity;
 import com.ucll.eventure.Data.DeclineDatabase;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
@@ -36,8 +30,6 @@ public class PublicFragment extends Fragment {
     private ArrayList<Event> publicEvents;
     private ListView otherEventsListView;
     private EventAdapter eventAdapter;
-
-    //TODO: SET PUBLIC EVENTS TO DIFFERENT NODE FOR EXTRA SECURITY?
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,7 +92,7 @@ public class PublicFragment extends Fragment {
             otherEventsListView.setAdapter(eventAdapter);
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Events");
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents");
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -109,7 +101,7 @@ public class PublicFragment extends Fragment {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Event event = dataSnapshot.getValue(t2);
-                        if (event != null && event.isTotallyVisible() && !contains(event, publicEvents)) {
+                        if (event != null && !contains(event, publicEvents)) {
                             if (!goingEvents.contains(event.getEventID()) && !declinedEvents.contains(event.getEventID())) {
                                     publicEvents.add(event);
                             }
