@@ -269,31 +269,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void setAttending(View v) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID()).child("attending").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
+        if(!new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID().equals(eventToDisplay.getCreator())){
+            if (eventToDisplay != null) {
+                if (eventToDisplay != null && !signedUp) {
+                    ref.setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
+                    attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() + 1));
+                    events.add(eventToDisplay.getEventID());
+                    new GoingDatabase(getApplicationContext()).writeToFile(events);
+                    signedUp = true;
 
-        if (eventToDisplay != null) {
-            if (eventToDisplay != null && !signedUp) {
-                ref.setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
-                attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() + 1));
-                events.add(eventToDisplay.getEventID());
-                new GoingDatabase(getApplicationContext()).writeToFile(events);
-                signedUp = true;
+                    going.setText("Going");
+                    going.setTextColor(Color.parseColor("#FFFFFF"));
+                    going.setBackground(getResources().getDrawable(R.drawable.rounded_corners));
 
-                going.setText("Going");
-                going.setTextColor(Color.parseColor("#FFFFFF"));
-                going.setBackground(getResources().getDrawable(R.drawable.rounded_corners));
-
+                } else {
+                    signedUp = false;
+                    ref.removeValue();
+                    events.remove(eventToDisplay.getEventID());
+                    new GoingDatabase(getApplicationContext()).writeToFile(events);
+                    attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() - 1));
+                    going.setText("Going?");
+                    going.setTextColor(Color.parseColor("#000000"));
+                    going.setBackground(getResources().getDrawable(R.drawable.textview_rounded_corners));
+                }
             } else {
-                signedUp = false;
-                ref.removeValue();
-                events.remove(eventToDisplay.getEventID());
-                new GoingDatabase(getApplicationContext()).writeToFile(events);
-                attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() - 1));
-                going.setText("Going?");
-                going.setTextColor(Color.parseColor("#000000"));
-                going.setBackground(getResources().getDrawable(R.drawable.textview_rounded_corners));
+                Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
             }
-        } else {
-            Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_SHORT).show();
         }
     }
 

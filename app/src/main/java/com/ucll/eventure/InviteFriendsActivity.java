@@ -133,6 +133,17 @@ public class InviteFriendsActivity extends AppCompatActivity {
     private void submitInvitesToDatabase(InviteAndUser invitee){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
         ref.setValue(eventToDisplay.isTotallyVisible());
+
+        String node = "";
+        if(eventToDisplay.isTotallyVisible()){
+            node = "PublicEvents";
+        } else {
+            node = "PrivateEvents";
+        }
+        String toset = new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID();
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child(node).child(eventToDisplay.getEventID());
+        ref2.child("visibleTo").child(toset).setValue(toset);
+
         finish();
     }
 }
