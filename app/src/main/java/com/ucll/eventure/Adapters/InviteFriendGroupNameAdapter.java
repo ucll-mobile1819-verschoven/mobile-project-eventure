@@ -92,8 +92,6 @@ public class InviteFriendGroupNameAdapter extends BaseAdapter {
             selectedList.add(select);
             toCheck.setChecked(true);
         }
-
-        Toast.makeText(context, String.valueOf(selectedList.size()), Toast.LENGTH_LONG).show();
     }
 
     public ArrayList<String> getSelectedList() {

@@ -147,7 +147,10 @@ public class LoginActivity extends AppCompatActivity {
                     if (currentUser != null) {
                         final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken);
                         final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
-                        users.setValue(toCreate);
+                        users.child("databaseID").setValue(currentUser.getUid());
+                        users.child("email").setValue(currentUser.getEmail());
+                        users.child("messageID").setValue(deviceToken);
+                        users.child("name").setValue(currentUser.getDisplayName());
                         new UserDatabase(getApplicationContext()).writeToFile(toCreate);
                         goToMain();
                     }

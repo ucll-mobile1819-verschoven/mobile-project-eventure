@@ -127,7 +127,6 @@ public class HomeFragment extends Fragment {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     boolean visible = dataSnapshot.getValue(t2);
-                    Toast.makeText(context, dataSnapshot.getKey(), Toast.LENGTH_LONG).show();
                     if (visible){
                         publicInvites.add(dataSnapshot.getKey());
                     } else {
@@ -171,8 +170,6 @@ public class HomeFragment extends Fragment {
             checkMe(step, goingEvents);
 
         for (String id : ids) {
-            Toast.makeText(context, id, Toast.LENGTH_LONG).show();
-            Toast.makeText(context, node, Toast.LENGTH_LONG).show();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(node).child(id);
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
