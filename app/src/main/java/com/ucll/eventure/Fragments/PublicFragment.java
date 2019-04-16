@@ -2,8 +2,6 @@ package com.ucll.eventure.Fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.ucll.eventure.Adapters.EventAdapter;
 import com.ucll.eventure.Data.DeclineDatabase;
 import com.ucll.eventure.Data.Event;
@@ -67,7 +66,7 @@ public class PublicFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(@NotNull Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null) {
             otherEventsListView = getView().findViewById(R.id.home_listview);
@@ -93,9 +92,9 @@ public class PublicFragment extends Fragment {
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents");
-            ref.addValueEventListener(new ValueEventListener() {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                public void onDataChange(@NotNull DataSnapshot snapshot) {
                     GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
                     };
 
@@ -115,7 +114,7 @@ public class PublicFragment extends Fragment {
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void onCancelled(@NotNull DatabaseError databaseError) {
                     Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
@@ -129,7 +128,7 @@ public class PublicFragment extends Fragment {
         eventAdapter.notifyDataSetChanged();
     }
 
-    private boolean contains(@NonNull Event event, ArrayList<Event> events) {
+    private boolean contains(@NotNull Event event, ArrayList<Event> events) {
         for (Event event1 : events) {
             if (event1 != null && event1.getEventID().equals(event.getEventID()))
                 return true;
