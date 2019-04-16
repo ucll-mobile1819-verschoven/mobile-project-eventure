@@ -1,7 +1,7 @@
 package com.ucll.eventure;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.annotation.*;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
@@ -65,7 +66,7 @@ public class AddEventActivity extends AppCompatActivity {
                 .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NotNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     visibilityOptions.add(dataSnapshot.getKey());
                     ArrayList<String> ids = new ArrayList<>();
@@ -82,7 +83,7 @@ public class AddEventActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(@NotNull DatabaseError databaseError) {
                 Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
 

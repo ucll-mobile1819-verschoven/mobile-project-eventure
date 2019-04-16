@@ -3,8 +3,6 @@ package com.ucll.eventure.Fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -41,7 +39,8 @@ public class HomeFragment extends Fragment {
     private ArrayList<Event> myAttendingEvents;
     private ListView otherEventsListView;
     private RecyclerView attendingListView;
-    private ArrayList<String> inviteIDs;
+    private ArrayList<String> publicInvites;
+    private ArrayList<String> privateInvites;
     private TextView title1;
     private TextView title2;
     private View view1;
@@ -50,7 +49,7 @@ public class HomeFragment extends Fragment {
     private EventAttendingAdapter adapter;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.home, container, false);
     }
 
@@ -97,7 +96,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null) {
             otherEventsListView = getView().findViewById(R.id.home_listview);
@@ -115,29 +114,33 @@ public class HomeFragment extends Fragment {
     }
 
     private void getInvites() {
-        inviteIDs = new ArrayList<>();
-        inviteIDs.clear();
+        publicInvites = new ArrayList<>();
+        publicInvites.clear();
+        privateInvites = new ArrayList<>();
+        privateInvites.clear();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(new UserDatabase(getActivity()).readFromFile().getDatabaseID());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                GenericTypeIndicator<String> t2 = new GenericTypeIndicator<String>() {
+            public void onDataChange(DataSnapshot snapshot) {
+                GenericTypeIndicator<Boolean> t2 = new GenericTypeIndicator<Boolean>() {
                 };
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    String eventID = dataSnapshot.getValue(t2);
-                    if (!inviteIDs.contains(eventID))
-                        inviteIDs.add(eventID);
-
+                    boolean visible = dataSnapshot.getValue(t2);
+                    if (visible){
+                        publicInvites.add(dataSnapshot.getKey());
+                    } else {
+                        privateInvites.add(dataSnapshot.getKey());
+                    }
                 }
 
-                if (inviteIDs != null) {
+                if (publicInvites != null && privateInvites != null) {
                     getPrivateEvents();
                 }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
                 Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
 
@@ -157,47 +160,61 @@ public class HomeFragment extends Fragment {
             adapter = new EventAttendingAdapter(getActivity(), myAttendingEvents);
             attendingListView.setAdapter(adapter);
             final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
-            final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-            inviteIDs.addAll(goingEvents);
-            for (String id : inviteIDs) {
+            getEvents(goingEvents, "PrivateEvents","start");
+        }
+    }
 
-                DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(id);
-                ref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
-                        };
+    private void getEvents(ArrayList<String> ids, final String node, final String step){
+        final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
+        final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
+        for (String id : ids) {
 
-                        Event event = snapshot.getValue(t2);
-                        if (event != null) {
-                            if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                                if (!declinedEvents.contains(event.getEventID())) {
-                                    if (goingEvents.contains(event.getEventID())) {
-                                        myAttendingEvents.add(event);
-                                    } else {
-                                        myOtherEvents.add(event);
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(node).child(id);
+            ref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+                    GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
+                    };
 
-                                    }
+                    Event event = snapshot.getValue(t2);
+                    if (event != null) {
+                        if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
+                            if (!declinedEvents.contains(event.getEventID())) {
+                                if (goingEvents.contains(event.getEventID())) {
+                                    myAttendingEvents.add(event);
+                                } else {
+                                    myOtherEvents.add(event);
+
                                 }
                             }
-
-
                         }
 
-                        if (myOtherEvents != null && myAttendingEvents != null) {
-                            getEvents();
-                            Log.d("interest", "getEvents called");
+
+                    }
+
+                    if (myOtherEvents != null && myAttendingEvents != null) {
+                        if(step.equals("start")){
+                            getEvents(publicInvites, "PublicEvents", "second");
+                        } else {
+                            if(step.equals("second")){
+                                getEvents(privateInvites, "PrivateEvents", "third");
+                            } else {
+                                if(step.equals("third")){
+                                    getEvents();
+                                    Log.d("interest", "getEvents called");
+                                }
+                            }
                         }
                     }
+                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("eventure", databaseError.getMessage());
-                        //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
-                    }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.d("eventure", databaseError.getMessage());
+                    //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
+                }
 
-                });
-            }
+            });
         }
     }
 
@@ -214,7 +231,7 @@ public class HomeFragment extends Fragment {
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents");
             ref.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                public void onDataChange(DataSnapshot snapshot) {
                     GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
                     };
 
@@ -237,7 +254,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
+                public void onCancelled(DatabaseError databaseError) {
                     Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
@@ -284,7 +301,7 @@ public class HomeFragment extends Fragment {
      * @param event event to check for duplicate
      * @return boolean that indicated presence duplicate object
      */
-    private boolean contains(@NonNull Event event, ArrayList<Event> events) {
+    private boolean contains(Event event, ArrayList<Event> events) {
         for (Event event1 : events) {
             if (event1 != null && event1.getEventID().equals(event.getEventID()))
                 return true;

@@ -1,14 +1,9 @@
 package com.ucll.eventure;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,7 +16,7 @@ import com.google.gson.Gson;
 import com.ucll.eventure.Adapters.InviteFriendAdapter;
 import com.ucll.eventure.Adapters.InviteFriendGroupNameAdapter;
 import com.ucll.eventure.Data.Event;
-import com.ucll.eventure.Data.Invite;
+import com.ucll.eventure.Data.InviteAndUser;
 import com.ucll.eventure.Data.UserDatabase;
 
 import java.util.ArrayList;
@@ -31,11 +26,11 @@ import java.util.HashMap;
 
 // eventInvite object: ID & public or not
 public class InviteFriendsActivity extends AppCompatActivity {
-    private HashMap<String, ArrayList<Invite>> groups;
+    private HashMap<String, ArrayList<InviteAndUser>> groups;
     private ListView friendGroups;
     private ListView friendsListView;
     private ArrayList<String> friendGroupNames;
-    private ArrayList<Invite> friendsUserHas;
+    private ArrayList<InviteAndUser> friendsUserHas;
     private InviteFriendAdapter inviteFriendAdapter;
     private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
 
@@ -66,9 +61,9 @@ public class InviteFriendsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     friendGroupNames.add(dataSnapshot.getKey());
-                    ArrayList<Invite> ids = new ArrayList<>();
+                    ArrayList<InviteAndUser> ids = new ArrayList<>();
                     for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        ids.add(new Invite(dataSnapshot1.getKey(), eventToDisplay.getEventID(), dataSnapshot1.getValue().toString()));
+                        ids.add(new InviteAndUser(dataSnapshot1.getKey(), eventToDisplay.getEventID(), dataSnapshot1.getValue().toString()));
                     }
 
                     groups.put(dataSnapshot.getKey(), ids);
@@ -94,7 +89,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     //ID, NAME
-                    friendsUserHas.add(new Invite(dataSnapshot.getKey(), eventToDisplay.getEventID(), dataSnapshot.getValue().toString()));
+                    friendsUserHas.add(new InviteAndUser(dataSnapshot.getKey(), eventToDisplay.getEventID(), dataSnapshot.getValue().toString()));
                 }
 
                 display();
@@ -118,22 +113,24 @@ public class InviteFriendsActivity extends AppCompatActivity {
     }
 
     public void submitInvites(View view){
-        ArrayList<Invite> selectedFriends = inviteFriendAdapter.getSelectedList();
+        ArrayList<InviteAndUser> selectedFriends = inviteFriendAdapter.getSelectedList();
 
-        for(Invite invitee : selectedFriends){
+        for(InviteAndUser invitee : selectedFriends){
             submitInvitesToDatabase(invitee);
         }
 
         ArrayList<String> selectedGroups = inviteFriendGroupNameAdapter.getSelectedList();
         for(String groupName : selectedGroups){
-            for(Invite invitee : groups.get(groupName)){
+            for(InviteAndUser invitee : groups.get(groupName)){
                 submitInvitesToDatabase(invitee);
             }
         }
 
+        Toast.makeText(getApplicationContext(), "submitinvites",Toast.LENGTH_LONG).show();
+
     }
 
-    private void submitInvitesToDatabase(Invite invitee){
+    private void submitInvitesToDatabase(InviteAndUser invitee){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
         ref.setValue(eventToDisplay.isTotallyVisible());
         finish();

@@ -8,23 +8,23 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.ucll.eventure.Data.Invite;
+import com.ucll.eventure.Data.InviteAndUser;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 //TODO: MAKE ADAPTER TO INVITE FRIENDS
 public class InviteFriendGroupNameAdapter extends BaseAdapter {
     private ArrayList<String> groupNames;
-    private HashMap<String, ArrayList<Invite>> groupMembers;
+    private HashMap<String, ArrayList<InviteAndUser>> groupMembers;
     private Context context;
     private ArrayList<String> selectedList;
     private ArrayList<CheckBox> checkBoxes;
 
-    public InviteFriendGroupNameAdapter(Context context, ArrayList<String> groupNames, HashMap<String, ArrayList<Invite>> groupMembers) {
+    public InviteFriendGroupNameAdapter(Context context, ArrayList<String> groupNames, HashMap<String, ArrayList<InviteAndUser>> groupMembers) {
         this.context = context;
         this.groupNames = groupNames;
         this.groupMembers = groupMembers;
@@ -92,6 +92,8 @@ public class InviteFriendGroupNameAdapter extends BaseAdapter {
             selectedList.add(select);
             toCheck.setChecked(true);
         }
+
+        Toast.makeText(context, String.valueOf(selectedList.size()), Toast.LENGTH_LONG).show();
     }
 
     public ArrayList<String> getSelectedList() {

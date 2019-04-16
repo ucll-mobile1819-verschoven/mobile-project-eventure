@@ -1,13 +1,13 @@
 package com.ucll.eventure.Data;
 
-public class Invite {
+public class InviteAndUser {
     private String userID;
     private String eventID;
     private String userName;
 
-    public Invite(){}
+    public InviteAndUser(){}
 
-    public Invite(String userID, String eventID, String userName) {
+    public InviteAndUser(String userID, String eventID, String userName) {
         this.userID = userID;
         this.eventID = eventID;
         this.userName = userName;

@@ -1,7 +1,6 @@
 package com.ucll.eventure;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.ucll.eventure.Data.User;
@@ -112,7 +112,7 @@ public class LoginActivity extends AppCompatActivity {
             if (mAuth != null) {
                 mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NotNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in User's information
                             // FirebaseUser user = mAuth.getCurrentUser();
@@ -147,25 +147,9 @@ public class LoginActivity extends AppCompatActivity {
                     if (currentUser != null) {
                         final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken);
                         final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
-
-
-                          users.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if(!snapshot.exists()){
-                                    users.setValue(toCreate);
-                                    new UserDatabase(getApplicationContext()).writeToFile(toCreate);
-                                }
-
-                                goToMain();
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-
-                        });
+                        users.setValue(toCreate);
+                        new UserDatabase(getApplicationContext()).writeToFile(toCreate);
+                        goToMain();
                     }
                 } else {
                     goToMain();

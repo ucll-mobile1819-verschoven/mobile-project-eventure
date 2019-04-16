@@ -1,34 +1,27 @@
 package com.ucll.eventure.Adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.ucll.eventure.Data.Event;
-import com.ucll.eventure.Data.Invite;
-import com.ucll.eventure.MapsActivity;
+import com.ucll.eventure.Data.InviteAndUser;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
 //TODO: MAKE ADAPTER TO INVITE FRIENDS
 public class InviteFriendAdapter extends BaseAdapter {
-    private ArrayList<Invite> events;
+    private ArrayList<InviteAndUser> events;
     private Context context;
-    private ArrayList<Invite> selectedList;
+    private ArrayList<InviteAndUser> selectedList;
     private ArrayList<CheckBox> checkBoxes;
 
-    public InviteFriendAdapter(Context context, ArrayList<Invite> events) {
+    public InviteFriendAdapter(Context context, ArrayList<InviteAndUser> events) {
         this.context = context;
         this.events = events;
         this.selectedList = new ArrayList<>();
@@ -41,7 +34,7 @@ public class InviteFriendAdapter extends BaseAdapter {
     }
 
     @Override
-    public Invite getItem(int position) {
+    public InviteAndUser getItem(int position) {
         return events.get(position);
     }
 
@@ -65,7 +58,7 @@ public class InviteFriendAdapter extends BaseAdapter {
         checkBoxes.add(selector);
 
         if (events.get(position) != null) {
-            final Invite toDisplay = events.get(position);
+            final InviteAndUser toDisplay = events.get(position);
 
             friendName.setText(toDisplay.getUserName());
 
@@ -81,7 +74,7 @@ public class InviteFriendAdapter extends BaseAdapter {
         return vi;
     }
 
-    private void itemIsSelected(int position, Invite select) {
+    private void itemIsSelected(int position, InviteAndUser select) {
         CheckBox toCheck = checkBoxes.get(position);
         boolean selected = toCheck.isChecked();
         if (selected) {
@@ -91,9 +84,11 @@ public class InviteFriendAdapter extends BaseAdapter {
             selectedList.add(select);
             toCheck.setChecked(true);
         }
+
+        Toast.makeText(context, String.valueOf(selectedList.size()), Toast.LENGTH_LONG).show();
     }
 
-    public ArrayList<Invite> getSelectedList() {
+    public ArrayList<InviteAndUser> getSelectedList() {
         return this.selectedList;
     }
 

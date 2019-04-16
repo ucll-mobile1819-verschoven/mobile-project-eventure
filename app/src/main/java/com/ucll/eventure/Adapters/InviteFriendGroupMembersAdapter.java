@@ -5,20 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.ucll.eventure.Data.Invite;
+import com.ucll.eventure.Data.InviteAndUser;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
 //TODO: MAKE ADAPTER TO INVITE FRIENDS
 public class InviteFriendGroupMembersAdapter extends BaseAdapter {
-    private ArrayList<Invite> names;
+    private ArrayList<InviteAndUser> names;
     private Context context;
 
-    public InviteFriendGroupMembersAdapter(Context context, ArrayList<Invite> names) {
+    public InviteFriendGroupMembersAdapter(Context context, ArrayList<InviteAndUser> names) {
         this.context = context;
         this.names = names;
     }
@@ -29,7 +28,7 @@ public class InviteFriendGroupMembersAdapter extends BaseAdapter {
     }
 
     @Override
-    public Invite getItem(int position) {
+    public InviteAndUser getItem(int position) {
         return names.get(position);
     }
 
