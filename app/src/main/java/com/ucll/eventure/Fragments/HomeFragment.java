@@ -119,7 +119,7 @@ public class HomeFragment extends Fragment {
         privateInvites = new ArrayList<>();
         privateInvites.clear();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(new UserDatabase(getActivity()).readFromFile().getDatabaseID());
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 GenericTypeIndicator<Boolean> t2 = new GenericTypeIndicator<Boolean>() {
@@ -127,7 +127,8 @@ public class HomeFragment extends Fragment {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     boolean visible = dataSnapshot.getValue(t2);
-                    if (visible) {
+                    Toast.makeText(context, dataSnapshot.getKey(), Toast.LENGTH_LONG).show();
+                    if (visible){
                         publicInvites.add(dataSnapshot.getKey());
                     } else {
                         privateInvites.add(dataSnapshot.getKey());
@@ -148,7 +149,6 @@ public class HomeFragment extends Fragment {
     }
 
     private void getPrivateEvents() {
-        Log.d("newCode1", "hey");
         if (getActivity() == null) {
             Toast.makeText(context, getString(R.string.wrong), Toast.LENGTH_LONG).show();
         } else {
@@ -160,22 +160,21 @@ public class HomeFragment extends Fragment {
             otherEventsListView.setAdapter(eventAdapter);
             adapter = new EventAttendingAdapter(getActivity(), myAttendingEvents);
             attendingListView.setAdapter(adapter);
-            final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
-            getGoingPrivateEvents(goingEvents, "PrivateEvents");
+            getEvents(publicInvites, "PublicEvents", "start");
         }
     }
 
-    private void getGoingPrivateEvents(ArrayList<String> ids, final String node) {
-        Log.d("newCode3", "hey");
+    private void getEvents(ArrayList<String> ids, final String node, final String step){
         final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
         final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-
         if(ids.isEmpty())
-            getPrivateInviteEvents(privateInvites, "PrivateEvents");
+            checkMe(step, goingEvents);
 
         for (String id : ids) {
+            Toast.makeText(context, id, Toast.LENGTH_LONG).show();
+            Toast.makeText(context, node, Toast.LENGTH_LONG).show();
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(node).child(id);
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
@@ -198,9 +197,7 @@ public class HomeFragment extends Fragment {
                     }
 
                     if (myOtherEvents != null && myAttendingEvents != null) {
-
-                        getPrivateInviteEvents(privateInvites, "PrivateEvents");
-
+                        checkMe(step, goingEvents);
                     }
                 }
 
@@ -214,51 +211,18 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void getPrivateInviteEvents(ArrayList<String> ids, final String node) {
-        Log.d("newCode4", "hey");
-        final ArrayList<String> goingEvents = new GoingDatabase(getActivity()).readFromFile();
-        final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
-
-        if(ids.isEmpty())
-            getPublicEvents();
-
-        for (String id : ids) {
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(node).child(id);
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot snapshot) {
-                    GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
-                    };
-
-                    Event event = snapshot.getValue(t2);
-                    if (event != null) {
-                        if (!contains(event, myOtherEvents) && !contains(event, myAttendingEvents)) {
-                            if (!declinedEvents.contains(event.getEventID())) {
-                                if (goingEvents.contains(event.getEventID())) {
-                                    myAttendingEvents.add(event);
-                                } else {
-                                    myOtherEvents.add(event);
-
-                                }
-                            }
-                        }
-
-
-                    }
-
-                    if (myOtherEvents != null && myAttendingEvents != null) {
-                        getPublicEvents();
-
-                    }
+    private void checkMe(String step, ArrayList<String> goingEvents){
+        if(step.equals("start")){
+            getEvents(goingEvents, "PrivateEvents","second");
+        } else {
+            if(step.equals("second")){
+                getEvents(privateInvites, "PrivateEvents", "third");
+            } else {
+                if(step.equals("third")){
+                    getPublicEvents();
+                    Log.d("interest", "getEvents called");
                 }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.d("eventure", databaseError.getMessage());
-                    //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
-                }
-
-            });
+            }
         }
     }
 
@@ -266,7 +230,6 @@ public class HomeFragment extends Fragment {
      * Get's events from firebase
      */
     private void getPublicEvents() {
-        Log.d("newCode5", "hey");
         if (getActivity() == null) {
             Toast.makeText(context, getString(R.string.wrong), Toast.LENGTH_LONG).show();
         } else {
@@ -274,7 +237,7 @@ public class HomeFragment extends Fragment {
             final ArrayList<String> declinedEvents = new DeclineDatabase(getActivity()).readFromFile();
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents");
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            ref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot snapshot) {
                     GenericTypeIndicator<Event> t2 = new GenericTypeIndicator<Event>() {
