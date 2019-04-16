@@ -254,7 +254,7 @@
         android:id="@+id/submit"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:backgroundTint="#FFFFFF"
+        app:backgroundTint="#FFFFFF"
         android:tint="@color/colorPrimary"
         android:layout_gravity="bottom|end"
         android:background="@android:color/transparent"

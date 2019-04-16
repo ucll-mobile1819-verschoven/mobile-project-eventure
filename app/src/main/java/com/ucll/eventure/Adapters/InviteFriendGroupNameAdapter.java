@@ -1,48 +1,45 @@
 package com.ucll.eventure.Adapters;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.Invite;
-import com.ucll.eventure.MapsActivity;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 //TODO: MAKE ADAPTER TO INVITE FRIENDS
-public class InviteFriendAdapter extends BaseAdapter {
-    private ArrayList<Invite> events;
+public class InviteFriendGroupNameAdapter extends BaseAdapter {
+    private ArrayList<String> groupNames;
+    private HashMap<String, ArrayList<Invite>> groupMembers;
     private Context context;
-    private ArrayList<Invite> selectedList;
+    private ArrayList<String> selectedList;
     private ArrayList<CheckBox> checkBoxes;
 
-    public InviteFriendAdapter(Context context, ArrayList<Invite> events) {
+    public InviteFriendGroupNameAdapter(Context context, ArrayList<String> groupNames, HashMap<String, ArrayList<Invite>> groupMembers) {
         this.context = context;
-        this.events = events;
+        this.groupNames = groupNames;
+        this.groupMembers = groupMembers;
         this.selectedList = new ArrayList<>();
         this.checkBoxes = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return events.size();
+        return groupNames.size();
     }
 
     @Override
-    public Invite getItem(int position) {
-        return events.get(position);
+    public String getItem(int position) {
+        return groupNames.get(position);
     }
 
     @Override
@@ -54,20 +51,24 @@ public class InviteFriendAdapter extends BaseAdapter {
     public View getView(final int position, final View convertView, ViewGroup parent) {
         View vi = convertView;
         if (vi == null)
-            vi = LayoutInflater.from(context).inflate(R.layout.item_invite_friend, parent, false);
+            vi = LayoutInflater.from(context).inflate(R.layout.item_invite_friend_groupname, parent, false);
 
         // Get View ID's
         // Set them
 
         TextView friendName = vi.findViewById(R.id.friendName);
         CheckBox selector = vi.findViewById(R.id.selected);
+        ListView members = vi.findViewById(R.id.group_members);
 
         checkBoxes.add(selector);
 
-        if (events.get(position) != null) {
-            final Invite toDisplay = events.get(position);
+        if (groupNames.get(position) != null && groupMembers.get(groupNames.get(position)) != null) {
+            final String toDisplay = groupNames.get(position);
 
-            friendName.setText(toDisplay.getUserName());
+            friendName.setText(toDisplay);
+
+            InviteFriendGroupMembersAdapter adapter = new InviteFriendGroupMembersAdapter(context, groupMembers.get(groupNames.get(position)));
+            members.setAdapter(adapter);
 
             vi.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -81,7 +82,7 @@ public class InviteFriendAdapter extends BaseAdapter {
         return vi;
     }
 
-    private void itemIsSelected(int position, Invite select) {
+    private void itemIsSelected(int position, String select) {
         CheckBox toCheck = checkBoxes.get(position);
         boolean selected = toCheck.isChecked();
         if (selected) {
@@ -93,7 +94,7 @@ public class InviteFriendAdapter extends BaseAdapter {
         }
     }
 
-    public ArrayList<Invite> getSelectedList() {
+    public ArrayList<String> getSelectedList() {
         return this.selectedList;
     }
 

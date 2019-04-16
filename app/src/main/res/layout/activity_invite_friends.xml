@@ -59,18 +59,14 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="4dp"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:layout_marginTop="8dp"
+            <ListView
                 android:layout_width="match_parent"
+                android:layout_height="200dp"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="4dp"
-                android:layout_marginBottom="12dp"
-                android:id="@+id/friend_groups"
                 android:layout_marginEnd="4dp"
                 android:layout_marginStart="4dp"
-                android:layout_height="140dp">
-
-            </android.support.v7.widget.RecyclerView>
+                android:id="@+id/your_friend_groups"/>
 
             <TextView
                 android:layout_marginTop="8dp"
@@ -103,6 +99,20 @@
                 android:layout_marginStart="4dp"
                 android:id="@+id/your_friends"/>
         </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            app:backgroundTint="@color/colorPrimary"
+            android:tint="#FFFFFF"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            android:elevation="8dp"
+            android:onClick="submitInvites"
+            android:layout_marginBottom="16dp"
+            android:src="@drawable/continue_button"/>
 
     </FrameLayout>
 </LinearLayout>

@@ -5,7 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.ucll.eventure.Adapters.InviteFriendAdapter;
+import com.ucll.eventure.Adapters.InviteFriendGroupNameAdapter;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.Invite;
 import com.ucll.eventure.Data.UserDatabase;
@@ -27,11 +31,13 @@ import java.util.HashMap;
 
 // eventInvite object: ID & public or not
 public class InviteFriendsActivity extends AppCompatActivity {
-    private HashMap<String, ArrayList<String>> groups;
-    private RecyclerView friendGroups;
+    private HashMap<String, ArrayList<Invite>> groups;
+    private ListView friendGroups;
     private ListView friendsListView;
     private ArrayList<String> friendGroupNames;
     private ArrayList<Invite> friendsUserHas;
+    private InviteFriendAdapter inviteFriendAdapter;
+    private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
 
     private Event eventToDisplay;
 
@@ -40,7 +46,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_invite_friends);
 
-        friendGroups = findViewById(R.id.friend_groups);
+        friendGroups = findViewById(R.id.your_friend_groups);
         friendsListView = findViewById(R.id.your_friends);
         groups = new HashMap<>();
         friendGroupNames = new ArrayList<>();
@@ -60,9 +66,9 @@ public class InviteFriendsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     friendGroupNames.add(dataSnapshot.getKey());
-                    ArrayList<String> ids = new ArrayList<>();
+                    ArrayList<Invite> ids = new ArrayList<>();
                     for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        ids.add(dataSnapshot1.getKey());
+                        ids.add(new Invite(dataSnapshot1.getKey(), eventToDisplay.getEventID(), dataSnapshot1.getValue().toString()));
                     }
 
                     groups.put(dataSnapshot.getKey(), ids);
@@ -104,9 +110,32 @@ public class InviteFriendsActivity extends AppCompatActivity {
     }
 
     private void display(){
-        InviteFriendAdapter inviteFriendAdapter = new InviteFriendAdapter(getApplicationContext(), friendsUserHas);
+        inviteFriendAdapter = new InviteFriendAdapter(getApplicationContext(), friendsUserHas);
         friendsListView.setAdapter(inviteFriendAdapter);
 
+        inviteFriendGroupNameAdapter = new InviteFriendGroupNameAdapter(getApplicationContext(), friendGroupNames, groups);
+        friendGroups.setAdapter(inviteFriendGroupNameAdapter);
+    }
 
+    public void submitInvites(View view){
+        ArrayList<Invite> selectedFriends = inviteFriendAdapter.getSelectedList();
+
+        for(Invite invitee : selectedFriends){
+            submitInvitesToDatabase(invitee);
+        }
+
+        ArrayList<String> selectedGroups = inviteFriendGroupNameAdapter.getSelectedList();
+        for(String groupName : selectedGroups){
+            for(Invite invitee : groups.get(groupName)){
+                submitInvitesToDatabase(invitee);
+            }
+        }
+
+    }
+
+    private void submitInvitesToDatabase(Invite invitee){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
+        ref.setValue(eventToDisplay.isTotallyVisible());
+        finish();
     }
 }

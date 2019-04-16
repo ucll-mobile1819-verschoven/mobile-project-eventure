@@ -114,11 +114,14 @@ public class AddEventActivity extends AppCompatActivity {
 
     private void checkBeforesubmitToDatabase(Event toSubmit) {
         if(visibility.getSelectedItem().toString().equals("Public")){
+            toSubmit.setTotallyVisible(true);
             simpleSubmitToDatabase(toSubmit, "PublicEvents");
         } else {
             if(visibility.getSelectedItem().toString().equals("Private")){
+                toSubmit.setTotallyVisible(false);
                 simpleSubmitToDatabase(toSubmit, "PrivateEvents");
             } else {
+                toSubmit.setTotallyVisible(false);
                 setVisibility(simpleSubmitToDatabase(toSubmit, "PrivateEvents"), groups.get(visibility.getSelectedItem().toString()));
             }
         }
