@@ -127,7 +127,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         //GET EVENT TO DISPLAY
         if (getIntent().getStringExtra("event") != null) {
             eventToDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
-            if(eventToDisplay.isTotallyVisible()){
+            if (eventToDisplay.isTotallyVisible()) {
                 visibility = "PublicEvents";
             } else {
                 visibility = "PrivateEvents";
@@ -166,7 +166,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.maps_author_menu, menu);
-        if(eventToDisplay.getCreator().equals(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID())){
+        if (eventToDisplay.getCreator().equals(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID())) {
             menu.getItem(0).setVisible(true);
             menu.getItem(1).setVisible(false);
         }
@@ -194,7 +194,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return super.onOptionsItemSelected(item);
     }
 
-    private void inviteFriends(){
+    private void inviteFriends() {
         String event = new Gson().toJson(eventToDisplay);
         Intent i = new Intent(this, InviteFriendsActivity.class);
         i.putExtra("event", event);
@@ -207,13 +207,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
         try {
-            if(eventToDisplay != null){
-            List<Address> addresses = geocoder.getFromLocationName(eventToDisplay.getAddress(), 1);
-                LatLng sydney = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
-                mMap.addMarker(new MarkerOptions().position(sydney).title("The Location"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-                //Move the camera to the user's location and zoom in!
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+            if (eventToDisplay != null) {
+                List<Address> addresses = geocoder.getFromLocationName(eventToDisplay.getAddress(), 1);
+                if (!addresses.isEmpty() && addresses.get(0) != null) {
+                    LatLng sydney = new LatLng(addresses.get(0).getLatitude(), addresses.get(0).getLongitude());
+                    mMap.addMarker(new MarkerOptions().position(sydney).title("The Location"));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+                    //Move the camera to the user's location and zoom in!
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12.0f));
+
+                }
             }
         } catch (IOException e) {
             Log.d("mymaps", e.toString());
@@ -269,7 +272,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void setAttending(View v) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID()).child("attending").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
-        if(!new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID().equals(eventToDisplay.getCreator())){
+        if (!new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID().equals(eventToDisplay.getCreator())) {
             if (eventToDisplay != null) {
                 if (eventToDisplay != null && !signedUp) {
                     ref.setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
@@ -398,7 +401,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        if(choose == 0){
+                        if (choose == 0) {
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(visibility).child(eventToDisplay.getEventID());
                             ref.removeValue();
                         } else {

@@ -125,12 +125,10 @@ public class InviteFriendsActivity extends AppCompatActivity {
                 submitInvitesToDatabase(invitee);
             }
         }
-
-        Toast.makeText(getApplicationContext(), "submitinvites",Toast.LENGTH_LONG).show();
-
     }
 
     private void submitInvitesToDatabase(InviteAndUser invitee){
+        Toast.makeText(getApplicationContext(), "Invites sent",Toast.LENGTH_LONG).show();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
         ref.setValue(eventToDisplay.isTotallyVisible());
 
