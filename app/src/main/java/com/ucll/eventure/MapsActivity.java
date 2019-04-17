@@ -169,6 +169,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (eventToDisplay.getCreator().equals(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID())) {
             menu.getItem(0).setVisible(true);
             menu.getItem(1).setVisible(false);
+            menu.getItem(2).setVisible(true);
         }
         return true;
     }
@@ -187,6 +188,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.menu_invite_friends:
                 inviteFriends();
                 break;
+            case R.id.menu_edit_event:
+                Intent i = new Intent(MapsActivity.this, AddEventActivity.class);
+                i.putExtra("mode","edit");
+                i.putExtra("event", new Gson().toJson(eventToDisplay));
+                startActivity(i);
+                finish();
             default:
                 break;
         }

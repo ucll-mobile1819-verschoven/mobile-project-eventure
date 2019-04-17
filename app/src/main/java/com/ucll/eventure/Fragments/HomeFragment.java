@@ -15,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,6 +48,7 @@ public class HomeFragment extends Fragment {
     private View view2;
     private EventAdapter eventAdapter;
     private EventAttendingAdapter adapter;
+    private SpinKitView load;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +79,7 @@ public class HomeFragment extends Fragment {
             title2 = getView().findViewById(R.id.title2);
             view1 = getView().findViewById(R.id.view1);
             view2 = getView().findViewById(R.id.view2);
+            load = getView().findViewById(R.id.spin_kit);
             FloatingActionButton fab = getView().findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,7 +87,7 @@ public class HomeFragment extends Fragment {
                     addEvent();
                 }
             });
-            if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null) {
+            if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null && load != null) {
                 getInvites();
             }
         }
@@ -104,8 +107,9 @@ public class HomeFragment extends Fragment {
             title1 = getView().findViewById(R.id.title1);
             title2 = getView().findViewById(R.id.title2);
             view1 = getView().findViewById(R.id.view1);
+            load = getView().findViewById(R.id.spin_kit);
             view2 = getView().findViewById(R.id.view2);
-            if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null) {
+            if (otherEventsListView != null && attendingListView != null && title1 != null && title2 != null && view1 != null && view2 != null && load != null) {
                 getInvites();
             }
         }
@@ -201,6 +205,9 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.d("eventure", databaseError.getMessage());
+                    if (myOtherEvents != null && myAttendingEvents != null) {
+                        checkMe(step, goingEvents);
+                    }
                     //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
                 }
 
@@ -270,11 +277,13 @@ public class HomeFragment extends Fragment {
 
     public void addEvent() {
         Intent i = new Intent(context, AddEventActivity.class);
+        i.putExtra("mode","new");
         context.startActivity(i);
     }
 
     private void showEvents() {
         Log.d("interest", "called");
+        load.setVisibility(View.GONE);
         if (myOtherEvents.size() == 0) {
             view2.setVisibility(View.GONE);
             title2.setVisibility(View.GONE);

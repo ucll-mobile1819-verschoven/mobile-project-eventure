@@ -10,6 +10,7 @@
         <CheckBox
             android:layout_width="40dp"
             android:focusable="false"
+            android:clickable="false"
             android:focusableInTouchMode="false"
             android:id="@+id/selected"
             android:layout_height="40dp" />
@@ -17,6 +18,8 @@
             android:layout_width="wrap_content"
             android:text="telksmlfkdsmlkmlfksm"
             android:textStyle="bold"
+            android:focusableInTouchMode="false"
+            android:focusable="false"
             android:id="@+id/friendName"
             android:layout_height="wrap_content" />
     </LinearLayout>

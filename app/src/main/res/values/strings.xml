@@ -30,4 +30,6 @@
 
     <string name="your_friends">Your Friends</string>
     <string name="friend_groups">Your Friend Groups</string>
+
+    <string name="edit_event">Edit Event</string>
 </resources>

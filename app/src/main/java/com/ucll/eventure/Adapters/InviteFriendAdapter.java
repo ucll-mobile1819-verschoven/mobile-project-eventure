@@ -1,6 +1,7 @@
 package com.ucll.eventure.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,16 +66,15 @@ public class InviteFriendAdapter extends BaseAdapter {
             vi.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    Log.d("myFreeTime", String.valueOf(selectedList.size()));
                     itemIsSelected(position, toDisplay);
                 }
             });
-
-
         }
         return vi;
     }
 
-    private void itemIsSelected(int position, InviteAndUser select) {
+    public void itemIsSelected(int position, InviteAndUser select) {
         CheckBox toCheck = checkBoxes.get(position);
         boolean selected = toCheck.isChecked();
         if (selected) {

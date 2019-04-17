@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -29,6 +30,8 @@ public class PublicFragment extends Fragment {
     private ArrayList<Event> publicEvents;
     private ListView otherEventsListView;
     private EventAdapter eventAdapter;
+    private TextView title;
+    private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,6 +48,15 @@ public class PublicFragment extends Fragment {
     public void onStart() {
         super.onStart();
         setHasOptionsMenu(false);
+
+        if (getView() != null) {
+            otherEventsListView = getView().findViewById(R.id.home_listview);
+            title = getView().findViewById(R.id.title2);
+            view = getView().findViewById(R.id.view2);
+            if (otherEventsListView != null) {
+                getEvents();
+            }
+        }
     }
 
     @Override
@@ -54,6 +66,8 @@ public class PublicFragment extends Fragment {
 
         if (getView() != null) {
             otherEventsListView = getView().findViewById(R.id.home_listview);
+            title = getView().findViewById(R.id.title2);
+            view = getView().findViewById(R.id.view2);
             if (otherEventsListView != null) {
                 getEvents();
             }
@@ -126,6 +140,9 @@ public class PublicFragment extends Fragment {
     private void showEvents() {
         otherEventsListView.setVisibility(View.VISIBLE);
         eventAdapter.notifyDataSetChanged();
+        otherEventsListView.setVisibility(View.VISIBLE);
+        title.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
     }
 
     private boolean contains(@NotNull Event event, ArrayList<Event> events) {

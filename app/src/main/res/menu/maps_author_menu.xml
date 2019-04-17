@@ -18,6 +18,11 @@
             android:icon="@drawable/person_black"
             android:orderInCategory="300"
             android:title="Invite Friends" />
+        <item
+            android:id="@+id/menu_edit_event"
+            android:icon="@drawable/person_black"
+            android:orderInCategory="400"
+            android:title="Edit Event" />
     </group>
 
 

@@ -8,10 +8,13 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:id="@+id/selected"
+        android:clickable="false"
         android:layout_height="40dp" />
     <TextView
         android:layout_width="wrap_content"
         android:text="telksmlfkdsmlkmlfksm"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:textStyle="bold"
         android:id="@+id/friendName"
         android:layout_height="wrap_content" />

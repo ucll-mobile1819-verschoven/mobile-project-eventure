@@ -3,10 +3,16 @@ package com.ucll.eventure;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApiNotAvailableException;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -113,35 +119,38 @@ public class InviteFriendsActivity extends AppCompatActivity {
     }
 
     public void submitInvites(View view){
-        ArrayList<InviteAndUser> selectedFriends = inviteFriendAdapter.getSelectedList();
-
-        for(InviteAndUser invitee : selectedFriends){
-            submitInvitesToDatabase(invitee);
-        }
-
-        ArrayList<String> selectedGroups = inviteFriendGroupNameAdapter.getSelectedList();
-        for(String groupName : selectedGroups){
-            for(InviteAndUser invitee : groups.get(groupName)){
-                submitInvitesToDatabase(invitee);
-            }
-        }
-    }
-
-    private void submitInvitesToDatabase(InviteAndUser invitee){
-        Toast.makeText(getApplicationContext(), "Invites sent",Toast.LENGTH_LONG).show();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
-        ref.setValue(eventToDisplay.isTotallyVisible());
-
         String node = "";
         if(eventToDisplay.isTotallyVisible()){
             node = "PublicEvents";
         } else {
             node = "PrivateEvents";
         }
-        String toset = new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID();
-        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child(node).child(eventToDisplay.getEventID());
-        ref2.child("visibleTo").child(toset).setValue(toset);
+
+
+        ArrayList<InviteAndUser> selectedFriends = inviteFriendAdapter.getSelectedList();
+        Log.d("myFreeTime", String.valueOf(selectedFriends.size()));
+        for(InviteAndUser invitee : selectedFriends){
+            submitInvitesToDatabase(invitee, node);
+        }
+
+        ArrayList<String> selectedGroups = inviteFriendGroupNameAdapter.getSelectedList();
+        Log.d("myFreeTime", String.valueOf(selectedGroups.size()));
+        for(String groupName : selectedGroups){
+            for(InviteAndUser invitee : groups.get(groupName)){
+                submitInvitesToDatabase(invitee, node);
+            }
+        }
 
         finish();
+    }
+
+    private void submitInvitesToDatabase(InviteAndUser invitee, String node){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(invitee.getEventID());
+        ref.setValue(eventToDisplay.isTotallyVisible());
+
+        Toast.makeText(getApplicationContext(), "Invites sent",Toast.LENGTH_LONG).show();
+
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child(node).child(eventToDisplay.getEventID()).child("visibleTo").child(invitee.getUserID());
+        ref2.setValue(invitee.getUserID());
     }
 }
