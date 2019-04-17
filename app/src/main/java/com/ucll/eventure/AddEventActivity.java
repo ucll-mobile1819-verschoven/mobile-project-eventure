@@ -142,6 +142,7 @@ public class AddEventActivity extends AppCompatActivity {
 
         String userID = new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID();
         ref.child(id).child("attending").child(userID).setValue(userID);
+        ref.child(id).child("visibleTo").child(userID).setValue(userID);
 
         return id;
     }
