@@ -10,7 +10,6 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.NestedScrollView;
@@ -23,7 +22,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -53,6 +51,7 @@ import com.ucll.eventure.Data.DeclineDatabase;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
+import com.ucll.eventure.Managers.AppBarStateChangeListener;
 import com.vansuita.pickimage.bean.PickResult;
 import com.vansuita.pickimage.bundle.PickSetup;
 import com.vansuita.pickimage.dialog.PickImageDialog;
@@ -63,7 +62,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.Delayed;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, IPickResult {
 

@@ -1,4 +1,4 @@
-package com.ucll.eventure;
+package com.ucll.eventure.Managers;
 
 import android.support.design.widget.AppBarLayout;
 import android.util.Log;
