@@ -85,7 +85,7 @@ public class FriendsAdapter extends BaseAdapter {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            Toast.makeText(context, "trying to open "+userName+"\nID: "+toDisplay.getUserID(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "trying to open "+userName.getText().toString()+"\nID: "+toDisplay.getUserID(), Toast.LENGTH_SHORT).show();
                         }
                     }
             );
