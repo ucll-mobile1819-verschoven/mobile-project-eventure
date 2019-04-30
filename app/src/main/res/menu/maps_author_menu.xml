@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group >
+        <item
+            android:id="@+id/menu_delete_event"
+            android:visible="false"
+            android:icon="@drawable/delete_black"
+            android:orderInCategory="100"
+            android:title="Delete Event" />
+        <item
+            android:id="@+id/menu_hide_event"
+            android:icon="@drawable/not_visible"
+            android:orderInCategory="200"
+            android:title="Hide Event" />
+        <item
+            android:id="@+id/menu_invite_friends"
+            android:icon="@drawable/person_black"
+            android:orderInCategory="300"
+            android:title="Invite Friends" />
+        <item
+            android:id="@+id/menu_edit_event"
+            android:icon="@drawable/person_black"
+            android:orderInCategory="400"
+            android:title="Edit Event" />
+    </group>
+
+
+
+</menu>

@@ -1,4 +1,4 @@
-package com.ucll.eventure;
+package com.ucll.eventure.Managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

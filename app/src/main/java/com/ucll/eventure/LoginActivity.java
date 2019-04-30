@@ -1,7 +1,6 @@
 package com.ucll.eventure;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,10 +24,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
+import com.ucll.eventure.Managers.FirstTimeLaunchedManager;
 
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
@@ -83,15 +84,17 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check if User is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        User me = new UserDatabase(getApplicationContext()).readFromFile();
 
         FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
-        if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
+        if (firstTimeLaunchedManager.isFirstTimeLaunch() && me == null) {
             createOrUpdateUser();
         } else {
-            if (currentUser != null) {
+            if (currentUser != null && me != null) {
                 goToMain();
             }
         }
+
     }
 
     /**
@@ -105,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
             if (mAuth != null) {
                 mAuth.signInWithCredential(credential).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
+                    public void onComplete(@NotNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in User's information
                             // FirebaseUser user = mAuth.getCurrentUser();
@@ -138,9 +141,12 @@ public class LoginActivity extends AppCompatActivity {
                 FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
-                        User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken);
-                        DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
-                        users.setValue(toCreate);
+                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken);
+                        final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
+                        users.child("databaseID").setValue(currentUser.getUid());
+                        users.child("email").setValue(currentUser.getEmail());
+                        users.child("messageID").setValue(deviceToken);
+                        users.child("name").setValue(currentUser.getDisplayName());
                         new UserDatabase(getApplicationContext()).writeToFile(toCreate);
                         goToMain();
                     }

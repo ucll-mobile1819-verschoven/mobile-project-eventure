@@ -17,16 +17,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/friend_pic"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:contentDescription="@string/user_profile_picture"
+                tools:srcCompat="@tools:sample/avatars"
+                app:civ_border_width="2dp"
                 tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="0dp"
-                tools:srcCompat="@tools:sample/avatars" />
-
+                app:civ_border_color="#FF000000"/>
             <LinearLayout
                 android:id="@+id/friend"
                 android:layout_width="match_parent"
@@ -43,7 +43,6 @@
                     android:textSize="30sp"
                     tools:layout_editor_absoluteX="0dp"
                     tools:layout_editor_absoluteY="0dp" />
-
                 <TextView
                     android:id="@+id/event_amount"
                     android:layout_width="match_parent"
@@ -57,7 +56,6 @@
                     android:text="tap to view events"
                     android:textAlignment="center"
                     android:textStyle="italic" />
-
             </LinearLayout>
 
         </LinearLayout>
@@ -65,11 +63,10 @@
         <View
             android:id="@+id/view"
             android:layout_width="match_parent"
-            android:layout_height="9dp"
+            android:layout_height="1dp"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp"
-            android:background="#DDD"/>
-
+            android:background="#FFFFFF"/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

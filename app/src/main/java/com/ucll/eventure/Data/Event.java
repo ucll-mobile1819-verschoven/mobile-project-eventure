@@ -1,30 +1,31 @@
 package com.ucll.eventure.Data;
 
-import java.util.ArrayList;
-
 public class Event {
     private String eventID;
+    private String creator;
     private String eventTitle;
     private String shortDescription;
     private String longDescription;
     private String address;
     private String startTime;
     private String endTime;
-    private boolean viewBool;
+    private int attendees;
+    private boolean totallyVisible;
 
     public Event(){}
 
-    public Event(String eventID, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, boolean viewBool) {
+    public Event(String eventID, String creator, String eventTitle, String shortDescription, String longDescription, String address, String startTime, String endTime, int attendees, boolean totallyVisible) {
         this.eventID = eventID;
+        this.creator = creator;
         this.eventTitle = eventTitle;
         this.shortDescription = shortDescription;
         this.longDescription = longDescription;
         this.address = address;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.viewBool = viewBool;
+        this.attendees = attendees;
+        this.totallyVisible = totallyVisible;
     }
-
 
     public String getEventID() {
         return eventID;
@@ -32,6 +33,14 @@ public class Event {
 
     public void setEventID(String eventID) {
         this.eventID = eventID;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 
     public String getEventTitle() {
@@ -82,11 +91,19 @@ public class Event {
         this.endTime = endTime;
     }
 
-    public boolean isViewBool() {
-        return viewBool;
+    public int getAttendees() {
+        return attendees;
     }
 
-    public void setViewBool(boolean viewBool) {
-        this.viewBool = viewBool;
+    public void setAttendees(int attendees) {
+        this.attendees = attendees;
+    }
+
+    public boolean isTotallyVisible() {
+        return totallyVisible;
+    }
+
+    public void setTotallyVisible(boolean totallyVisible) {
+        this.totallyVisible = totallyVisible;
     }
 }

@@ -6,25 +6,21 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
+
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.NotNull;
-import com.google.gson.Gson;
+
 import com.ucll.eventure.Adapters.FriendsAdapter;
 import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.UserDatabase;
@@ -32,19 +28,14 @@ import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class FriendsFragment extends Fragment {
-
     // Android Layout
-    private View view;
     private ListView friendsList;
-    private TextView searchText;
     private List<Friend> friends;
     private Context context;
-    private LayoutInflater inflater;
+
 
 
     // Database Var
@@ -91,7 +82,11 @@ public class FriendsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null){
             friendsList = getView().findViewById(R.id.friends_list);
-            getFriends();
+
+            if(friendsList != null){
+                getFriends();
+            }
+
         }
     }
 
@@ -107,26 +102,20 @@ public class FriendsFragment extends Fragment {
             firebase = FirebaseDatabase
                     .getInstance()
                     .getReference()
-                    .child("friends")
-                    .child(new UserDatabase(context).readFromFile().getDatabaseID());
+
+                    .child("admin")
+                    .child("Users")
+                    .child(new UserDatabase(context).readFromFile().getDatabaseID())
+                    .child("friends");
+
 
             firebase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    GenericTypeIndicator<Friend> f2 = new GenericTypeIndicator<Friend>() {
-                    };
-
-                    Log.d("getFriendsTag", "we are in the database retrieval");
-                    Log.d("getFriendsTag", "dataSnapshot value");
-                    Log.d("getFriendsTag", dataSnapshot.toString());
-                    Log.d("getFriendsTag", "dataSnapshot children value");
-                    Log.d("getFriendsTag", dataSnapshot.getChildren().toString());
-
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                        Friend friend = snapshot.getValue(f2);
                         Log.d("getFriendsTag", snapshot.toString());
-                        Toast.makeText(context,friend.getUserID(),Toast.LENGTH_LONG).show();
-                        if(friend!=null){
+                        if(snapshot!=null){
+                            Friend friend = new Friend(snapshot.getKey(), snapshot.getValue().toString());
                             if(!friends.contains(friend)){
                                 friends.add(friend);
                             }
@@ -134,8 +123,7 @@ public class FriendsFragment extends Fragment {
                     }
 
                     if (friends != null){
-                        Log.d("getFriendsTag","friends != null");
-                        Log.d("getFriendsTag", String.valueOf(friends.size() + "size"));
+
                         showFriends();
                     }
                 }
@@ -151,19 +139,7 @@ public class FriendsFragment extends Fragment {
 
     private void showFriends(){
         Log.d("getFriendsTag", "we are in showfriends");
-        FriendsAdapter adapter = new FriendsAdapter(context,friends,inflater);
+        FriendsAdapter adapter = new FriendsAdapter(context,friends,getLayoutInflater());
         friendsList.setAdapter(adapter);
-        /*
-        friendsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Friend clickedFriend = friends.get(i);
-                String friend = new Gson().toJson(clickedFriend);
-                if(getActivity() != null){
-                    Intent intent = new Intent(getActivity(), View
-                }
-            }
-        });
-        */
     }
 }
