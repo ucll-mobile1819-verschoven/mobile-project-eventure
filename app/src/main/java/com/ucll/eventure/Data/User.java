@@ -5,6 +5,8 @@ public class User {
     private String email;
     private String messageID;
 
+    public User(){}
+
     public User(String databaseID, String name, String email, String messageID) {
         this.databaseID = databaseID;
         this.name = name;
