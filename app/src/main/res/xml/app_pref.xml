@@ -7,6 +7,7 @@
         <com.ucll.eventure.Preferences.EditTextPreference
             android:dialogTitle="@string/your_name"
             android:key="name"
+            android:enabled="false"
             android:background="@color/colorPrimary"
             android:summary="Click to show a text entry dialog"
             android:title="@string/your_name" />

@@ -41,7 +41,7 @@
     <string name="your_email">Your Email</string>
     <string name="other">Other</string>
     <string name="delete_account">Delete Your Account</string>
-    <string name="ypp">Your Profile Picture</string>
+    <string name="ypp">Your Profile Picture (Tap to edit)</string>
     <string name="unpp">Upload New Profile Picture</string>
     <string name="notifications">Notifications</string>
 </resources>

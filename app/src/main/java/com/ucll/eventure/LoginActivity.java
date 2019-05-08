@@ -38,6 +38,8 @@ import com.ucll.eventure.Managers.FirstTimeLaunchedManager;
 import com.ucll.eventure.Messaging.DBM;
 import com.ucll.eventure.Messaging.MyFirebaseMessagingService;
 
+import java.util.HashMap;
+
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private FirebaseAuth mAuth;
@@ -153,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
-                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken);
+                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<Object, String>());
                         final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
                         users.child("databaseID").setValue(currentUser.getUid());
                         users.child("email").setValue(currentUser.getEmail());
