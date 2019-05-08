@@ -4,6 +4,7 @@
 
     <string name="facebook_app_id">577191489424989</string>
     <string name="fb_login_protocol_scheme">fb577191489424989</string>
+    <string name="user_profile_picture">User profile picture</string>
 
     <string name="wrong">Something went wrong</string>
     <string name="title_activity_maps">Map</string>

@@ -27,7 +27,6 @@ import com.ucll.eventure.R;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
 public class FriendsAdapter extends BaseAdapter {
 
     private List<Friend> friends;
@@ -50,6 +49,7 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     @Override
+
     public long getItemId(int position) {
         return position;
     }
@@ -111,7 +111,9 @@ public class FriendsAdapter extends BaseAdapter {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+
                             Toast.makeText(context, "trying to open "+userName.getText().toString()+"\nID: "+toDisplay.getUserID(), Toast.LENGTH_SHORT).show();
+
                         }
                     }
             );

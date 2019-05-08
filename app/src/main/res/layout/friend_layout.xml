@@ -17,7 +17,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
-
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/friend_pic"
@@ -29,13 +28,9 @@
                 tools:layout_editor_absoluteX="0dp"
                 tools:layout_editor_absoluteY="0dp"
                 app:civ_border_color="#FF000000"/>
-
             <LinearLayout
                 android:id="@+id/friend"
                 android:layout_width="match_parent"
-                android:layout_marginLeft="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_gravity="center_vertical"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
@@ -49,6 +44,7 @@
                     android:textSize="30sp"
                     tools:layout_editor_absoluteX="0dp"
                     tools:layout_editor_absoluteY="0dp" />
+
                 <view
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -63,6 +59,13 @@
                     android:src="@drawable/check"
                     android:background="@android:color/transparent"/>
 
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="tap to view events"
+                    android:textAlignment="center"
+                    android:textStyle="italic" />
             </LinearLayout>
 
         </LinearLayout>
@@ -74,7 +77,6 @@
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp"
             android:background="#FFFFFF"/>
-
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

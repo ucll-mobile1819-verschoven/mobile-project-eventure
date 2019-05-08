@@ -7,11 +7,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -20,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+
 import com.ucll.eventure.Adapters.FriendsAdapter;
 import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.UserDatabase;
@@ -30,11 +33,13 @@ import com.ucll.eventure.R;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class FriendsFragment extends Fragment {
     // Android Layout
     private ListView friendsList;
     private List<Friend> friends;
     private Context context;
+
 
 
     // Database Var
@@ -80,7 +85,7 @@ public class FriendsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null) {
-            friendsList = getView().findViewById(R.id.friends_list);
+            friendsList = getView().findViewById(R.id.friends_list); 
             Button qr = getView().findViewById(R.id.qrcode);
             final Button friendGroups = getView().findViewById(R.id.friendgroups);
             if (friendsList != null && qr != null && friendGroups != null) {
@@ -99,6 +104,7 @@ public class FriendsFragment extends Fragment {
                     }
                 });
             }
+
         }
     }
 
@@ -124,10 +130,12 @@ public class FriendsFragment extends Fragment {
             firebase = FirebaseDatabase
                     .getInstance()
                     .getReference()
+
                     .child("admin")
                     .child("Users")
                     .child(new UserDatabase(context).readFromFile().getDatabaseID())
                     .child("friends");
+
 
             firebase.addValueEventListener(new ValueEventListener() {
                 @Override

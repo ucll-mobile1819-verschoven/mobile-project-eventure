@@ -6,11 +6,13 @@ android {
         config {
             keyAlias 'Devs'
             keyPassword 'uclleventure'
+
             storeFile file('D:/Users/Victor_Engelen/Documents/GitHub/mobile-project-eventure/eventure.jks')
             storePassword 'uclleventure'
         }
     }
     compileSdkVersion 28
+
     defaultConfig {
         applicationId "com.ucll.eventure"
         minSdkVersion 21
@@ -25,15 +27,18 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.config
+
         }
         debug {
             signingConfig signingConfigs.config
+
         }
     }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:support-annotations:28.0.0'
@@ -45,6 +50,7 @@ dependencies {
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+
     implementation 'com.ablanco.zoomy:zoomy:1.1.0'
     implementation 'com.dlazaro66.qrcodereaderview:qrcodereaderview:2.0.3'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'

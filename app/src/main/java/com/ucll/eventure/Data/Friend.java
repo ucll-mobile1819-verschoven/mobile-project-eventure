@@ -12,7 +12,6 @@ public class Friend {
         this.name = name;
         this.accepted = accepted;
     }
-
     public String getUserID() {
         return userID;
     }

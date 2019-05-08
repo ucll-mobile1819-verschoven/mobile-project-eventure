@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.ucll.eventure.Adapters.TabAdapter;
+import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.Fragments.FriendsFragment;
 import com.ucll.eventure.Fragments.HomeFragment;
 import com.ucll.eventure.Fragments.PublicFragment;
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
         adapter = new TabAdapter(getSupportFragmentManager());
-        adapter.addFragment(new FriendsFragment(), "Friends");
+        adapter.addFragment(new FriendsFragment(), "Friend");
         adapter.addFragment(new HomeFragment(), "Home");
         adapter.addFragment(new PublicFragment(), "Public");
         viewPager.setAdapter(adapter);

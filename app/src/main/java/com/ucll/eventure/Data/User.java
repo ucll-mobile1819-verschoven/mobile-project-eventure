@@ -1,7 +1,6 @@
 package com.ucll.eventure.Data;
 
 import java.util.HashMap;
-
 public class User {
     private String databaseID;
     private String name;
