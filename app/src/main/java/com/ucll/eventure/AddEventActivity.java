@@ -2,6 +2,8 @@ package com.ucll.eventure;
 
 import android.content.Context;
 import android.annotation.*;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -37,6 +39,8 @@ public class AddEventActivity extends AppCompatActivity {
     private ArrayList<String> visibilityOptions;
     private HashMap<String, ArrayList<String>> groups;
     private Event toDisplay;
+    private ArrayList<String> oldInvitees;
+    private ArrayList<String> oldAttanding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,15 +198,89 @@ public class AddEventActivity extends AppCompatActivity {
     }
 
     private void removeOld(String node){
+        oldInvitees = new ArrayList<>();
+        DatabaseReference ref;
         if(toDisplay.isTotallyVisible() && node.equals("PrivateEvents")){
+            Log.d("removeOld", "Private");
+            ref = FirebaseDatabase.getInstance().getReference().child("PublicEvents").child(toDisplay.getEventID()).child("visibleTo");
             DatabaseReference no = FirebaseDatabase.getInstance().getReference().child("PublicEvents").child(toDisplay.getEventID());
-            no.removeValue();
+            makeDynamic(ref, no);
         } else {
             if(!toDisplay.isTotallyVisible() && node.equals("PublicEvents")){
+                Log.d("removeOld", "Public");
+                ref = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(toDisplay.getEventID()).child("visibleTo");
                 DatabaseReference no = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(toDisplay.getEventID());
-                no.removeValue();
+                makeDynamic(ref,no);
             }
         }
+    }
+
+    private void makeDynamic(final DatabaseReference ref, final DatabaseReference no){
+        oldAttanding = new ArrayList<>();
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NotNull DataSnapshot snapshot) {
+                if(snapshot != null){
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        oldInvitees.add(dataSnapshot.getKey());
+                    }
+                }
+
+                DatabaseReference reference = ref.getParent().child("attending");
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot1) {
+                        if(dataSnapshot1 != null){
+                            for (DataSnapshot dataSnapshot : dataSnapshot1.getChildren()) {
+                                oldAttanding.add(dataSnapshot.getKey());
+                            }
+                        }
+
+                        no.removeValue();
+                        makeDynamicInvites(oldInvitees, oldAttanding);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void onCancelled(@NotNull DatabaseError databaseError) {
+                Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
+    }
+
+    private void makeDynamicInvites(ArrayList<String> invites, ArrayList<String> attending){
+        Log.d("makeDynamic", String.valueOf(toDisplay != null));
+        Log.d("makeDynamic", "makeDynamicInvites");
+        if(toDisplay != null) {
+            for (String id : invites) {
+                for (String attendingID : attending) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(id).child(toDisplay.getEventID());
+                    if (visibility.getSelectedItem().toString().equals("Public")) {
+                        ref.setValue(true);
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("PublicEvents").child(toDisplay.getEventID()).child("visibleTo");
+                        reference.child(id).setValue(id);
+                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("PublicEvents").child(toDisplay.getEventID()).child("attending");
+                        reference1.child(attendingID).setValue(attendingID);
+                    } else {
+                        ref.setValue(false);
+                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(toDisplay.getEventID()).child("visibleTo");
+                        reference.child(id).setValue(id);
+                        DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference().child("PrivateEvents").child(toDisplay.getEventID()).child("attending");
+                        reference1.child(attendingID).setValue(attendingID);
+                    }
+                }
+            }
+        }
+
     }
 
     private void setVisibility(String nodeID, ArrayList<String> ids) {

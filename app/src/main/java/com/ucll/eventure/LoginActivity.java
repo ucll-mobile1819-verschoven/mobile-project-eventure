@@ -1,6 +1,10 @@
 package com.ucll.eventure;
 
+import android.app.Notification;
+import android.app.Service;
 import android.content.Intent;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,9 +31,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.Managers.FirstTimeLaunchedManager;
+import com.ucll.eventure.Messaging.DBM;
+import com.ucll.eventure.Messaging.MyFirebaseMessagingService;
 
 public class LoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
@@ -39,7 +46,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
-
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
@@ -77,6 +83,12 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
             }
         });
+
+        startServices();
+    }
+
+    protected void startServices(){
+        FirebaseMessaging.getInstance().setAutoInitEnabled(true);
     }
 
     @Override
