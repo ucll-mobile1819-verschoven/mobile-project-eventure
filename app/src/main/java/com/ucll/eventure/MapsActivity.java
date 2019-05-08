@@ -295,7 +295,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     ref.removeValue();
                     events.remove(eventToDisplay.getEventID());
                     new GoingDatabase(getApplicationContext()).writeToFile(events);
-                    attendingcount.setText(String.valueOf(eventToDisplay.getAttendees() - 1));
+                    attendingcount.setText(String.valueOf(Integer.valueOf(attendingcount.getText().toString()) - 1));
                     going.setText("Going?");
                     going.setTextColor(Color.parseColor("#000000"));
                     going.setBackground(getResources().getDrawable(R.drawable.textview_rounded_corners));
