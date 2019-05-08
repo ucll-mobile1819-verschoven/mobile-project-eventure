@@ -47,6 +47,7 @@
 
     <string name="qrcode">Add Friend</string>
     <string name="cfg">Friend Groups</string>
-    <string name="MyQr">Scan Code</string>
+    <string name="MyQr">Scan Your Friend"'s" Code</string>
+    <string name="yqr">Your QR Code</string>
 
 </resources>

@@ -8,6 +8,14 @@
     android:gravity="center"
     tools:context=".QrActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:text="@string/yqr"
+        android:gravity="center"
+        android:textSize="18dp"
+        android:layout_marginBottom="18dp"
+        android:layout_height="wrap_content" />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="300dp"
