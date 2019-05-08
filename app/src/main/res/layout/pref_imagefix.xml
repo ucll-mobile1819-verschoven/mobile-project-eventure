@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!-- Layout-Fix for the EditTextPreference Dialog -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:overScrollMode="ifContentScrolls"
     android:theme="@style/AppAlertDialogContent"
-    android:background="?android:attr/selectableItemBackground"
-    >
+    android:background="?android:attr/selectableItemBackground">
 
     <ScrollView
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -43,6 +42,8 @@
                 android:id="@+id/profile_pic"
                 android:layout_gravity="center"
                 android:layout_marginTop="12dp"
+                tools:srcCompat="@tools:sample/avatars"
+                android:src="@drawable/person123"
                 android:minHeight="100dp"
                 android:minWidth="100dp"
                 android:layout_width="wrap_content"

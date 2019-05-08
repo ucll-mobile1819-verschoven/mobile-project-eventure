@@ -81,7 +81,7 @@ public class DBM {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(context, channelId)
                         .setSmallIcon(R.drawable.ic_launcher_background)
-                        .setContentTitle("ULAYF")
+                        .setContentTitle("EVENTURE")
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
