@@ -28,8 +28,6 @@ import com.ucll.eventure.Data.UserDatabase;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//TODO: CREATE HOOK WHEN INVITE FRIENDS SELECTED
-
 // eventInvite object: ID & public or not
 public class InviteFriendsActivity extends AppCompatActivity {
     private HashMap<String, ArrayList<InviteAndUser>> groups;

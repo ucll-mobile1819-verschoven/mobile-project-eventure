@@ -44,4 +44,9 @@
     <string name="ypp">Your Profile Picture (Tap to edit)</string>
     <string name="unpp">Upload New Profile Picture</string>
     <string name="notifications">Notifications</string>
+
+    <string name="qrcode">Add Friend</string>
+    <string name="cfg">Friend Groups</string>
+    <string name="MyQr">Scan Code</string>
+
 </resources>
