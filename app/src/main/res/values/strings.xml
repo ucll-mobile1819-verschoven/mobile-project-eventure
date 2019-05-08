@@ -33,4 +33,22 @@
     <string name="friend_groups">Your Friend Groups</string>
 
     <string name="edit_event">Edit Event</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Log out</string>
+    <string name="wrong_delete">Something went wrong while deleting your account</string>
+    <string name="format_input">Please check the format of your input</string>
+    <string name="your_info">Your info</string>
+    <string name="your_name">Your Name</string>
+    <string name="your_email">Your Email</string>
+    <string name="other">Other</string>
+    <string name="delete_account">Delete Your Account</string>
+    <string name="ypp">Your Profile Picture (Tap to edit)</string>
+    <string name="unpp">Upload New Profile Picture</string>
+    <string name="notifications">Notifications</string>
+
+    <string name="qrcode">Add Friend</string>
+    <string name="cfg">Friend Groups</string>
+    <string name="MyQr">Scan Your Friend"'s" Code</string>
+    <string name="yqr">Your QR Code</string>
+
 </resources>

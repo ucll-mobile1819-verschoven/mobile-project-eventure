@@ -17,7 +17,6 @@ import com.ucll.eventure.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-//TODO: MAKE ADAPTER TO INVITE FRIENDS
 public class InviteFriendGroupNameAdapter extends BaseAdapter {
     private ArrayList<String> groupNames;
     private HashMap<String, ArrayList<InviteAndUser>> groupMembers;

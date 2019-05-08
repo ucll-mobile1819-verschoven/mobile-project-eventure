@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -19,7 +21,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppTheme">
-        <activity android:name=".InviteFriendsActivity"></activity>
+        <activity android:name=".FriendGroupsActivity"></activity>
+        <activity android:name=".QrActivity" />
+
+        <service
+            android:name=".Messaging.MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity android:name=".SelectImage" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".InviteFriendsActivity" />
         <activity android:name=".AddEventActivity" />
 
         <provider

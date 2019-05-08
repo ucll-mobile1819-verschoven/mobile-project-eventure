@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <com.ucll.eventure.Preferences.MyPreferenceCategory android:title="@string/your_info" >
+        <Preference android:layout="@layout/pref_imagefix" android:title="@string/delete_account"
+            android:key="profileimage"
+            android:summary="@string/delete"/>
+        <com.ucll.eventure.Preferences.EditTextPreference
+            android:dialogTitle="@string/your_name"
+            android:key="name"
+            android:enabled="false"
+            android:background="@color/colorPrimary"
+            android:summary="Click to show a text entry dialog"
+            android:title="@string/your_name" />
+        <com.ucll.eventure.Preferences.EditTextPreference
+            android:dialogLayout="@layout/pref_dialog_fix"
+            android:dialogTitle="@string/your_email"
+            android:key="email"
+            android:summary="Click to show a text entry dialog"
+            android:title="@string/your_email" />
+    </com.ucll.eventure.Preferences.MyPreferenceCategory>
+
+
+    <com.ucll.eventure.Preferences.MyPreferenceCategory android:title="@string/other">
+        <SwitchPreference
+            android:key="notifications"
+            android:title="@string/notifications" />
+        <Preference android:title="@string/delete_account"
+        android:key="delete"
+        android:summary="@string/delete"/>
+        <Preference android:title="@string/logout"
+            android:key="logout"
+            android:summary="@string/logout"/>
+    </com.ucll.eventure.Preferences.MyPreferenceCategory>
+
+</PreferenceScreen>

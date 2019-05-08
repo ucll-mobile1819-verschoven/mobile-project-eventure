@@ -5,10 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
@@ -30,9 +35,9 @@ import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
+import com.ucll.eventure.SettingsActivity;
 
 import java.util.ArrayList;
-//TODO: PLACEHOLDER TILL EVENTS ARE LOADED?
 
 public class HomeFragment extends Fragment {
     private Context context;
