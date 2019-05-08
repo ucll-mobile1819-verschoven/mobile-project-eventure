@@ -12,7 +12,6 @@ import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
-//TODO: MAKE ADAPTER TO INVITE FRIENDS
 public class InviteFriendGroupMembersAdapter extends BaseAdapter {
     private ArrayList<InviteAndUser> names;
     private Context context;

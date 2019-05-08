@@ -38,7 +38,6 @@ import com.ucll.eventure.R;
 import com.ucll.eventure.SettingsActivity;
 
 import java.util.ArrayList;
-//TODO: PLACEHOLDER TILL EVENTS ARE LOADED?
 
 public class HomeFragment extends Fragment {
     private Context context;

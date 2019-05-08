@@ -15,9 +15,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucll.eventure.Data.Friend;
+import com.ucll.eventure.Data.User;
+import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
 
 import java.util.List;
@@ -59,10 +63,16 @@ public class FriendsAdapter extends BaseAdapter {
 
         final CircleImageView userPic = vi.findViewById(R.id.friend_pic);
         final TextView userName = vi.findViewById(R.id.user_name);
-        LinearLayout friend = vi.findViewById(R.id.friend);
+        final ImageView checkmark = vi.findViewById(R.id.checkMark);
+        final LinearLayout friend = vi.findViewById(R.id.friend);
 
         if(friends.get(i) != null){
             final Friend toDisplay = friends.get(i);
+            final User me = new UserDatabase(context).readFromFile();
+
+            if(toDisplay.getAccepted()){
+                checkmark.setVisibility(View.GONE);
+            }
 
             StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
             final long ONE_MEGABYTE = 1024 * 1024;
@@ -80,6 +90,22 @@ public class FriendsAdapter extends BaseAdapter {
 
 
             userName.setText(toDisplay.getName());
+
+            checkmark.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
+                    ref.removeValue();
+                    toDisplay.setAccepted(true);
+                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child(toDisplay.getUserID());
+                    ref2.setValue(toDisplay);
+                    DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID());
+                    ref3.child("name").setValue(me.getName());
+                    ref3.child("userID").setValue(me.getDatabaseID());
+                    ref3.child("accepted").setValue(true);
+                    checkmark.setVisibility(View.GONE);
+                }
+            });
 
             friend.setOnClickListener(
                     new View.OnClickListener() {
