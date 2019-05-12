@@ -3,8 +3,9 @@ package com.ucll.eventure;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,18 +15,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
+import com.ucll.eventure.Adapters.CreateAndEditFriendGroupAdapter;
 import com.ucll.eventure.Adapters.InviteFriendAdapter;
 import com.ucll.eventure.Adapters.InviteFriendGroupNameAdapter;
-import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.Friend;
+import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-// eventInvite object: ID & public or not
-public class InviteFriendsActivity extends AppCompatActivity {
+public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     private HashMap<String, ArrayList<Friend>> groups;
     private ListView friendGroups;
     private ListView friendsListView;
@@ -33,13 +33,12 @@ public class InviteFriendsActivity extends AppCompatActivity {
     private ArrayList<Friend> friendsUserHas;
     private InviteFriendAdapter inviteFriendAdapter;
     private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
-
-    private Event eventToDisplay;
+    private CreateAndEditFriendGroupAdapter createAndEditFriendGroupAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_invite_friends);
+        setContentView(R.layout.activity_friend_groups);
 
         friendGroups = findViewById(R.id.your_friend_groups);
         friendsListView = findViewById(R.id.your_friends);
@@ -47,13 +46,79 @@ public class InviteFriendsActivity extends AppCompatActivity {
         friendGroupNames = new ArrayList<>();
         friendsUserHas = new ArrayList<>();
 
-        if (getIntent().getStringExtra("event") != null) {
-            eventToDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
-            getFriendGroups();
+        getFriendGroups();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public void continueThru (View v){
+        if(!inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
+            Toast.makeText(getApplicationContext(), getString(R.string.friendgroupActivity), Toast.LENGTH_LONG).show();
+        } else {
+            if(!inviteFriendAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
+                setLayoutSelectedFriends();
+            } else {
+                if(inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().size() <= 1){
+                    setLayoutSelectedFriends();
+                    EditText groupname = findViewById(R.id.group_nametext);
+                    groupname.setText(inviteFriendGroupNameAdapter.getSelectedList().get(0));
+                }
+            }
+        }
+
+    }
+
+    private void setLayoutSelectedFriends(){
+        setContentView(R.layout.create_new_friendgroup);
+        ListView members = findViewById(R.id.selected_friends);
+
+        createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
+        members.setAdapter(createAndEditFriendGroupAdapter);
+    }
+
+    public void createNewFriendGroup(View v){
+        //TODO: Set new adapter with delete option!
+        //TODO: Get members & name
+        //TODO: UPDATE EVERYTHING IN DATABASE
+
+        EditText groupname = findViewById(R.id.group_nametext);
+
+        if(groupname != null){
+            String groupnamea = groupname.getText().toString();
+            if(!groupnamea.isEmpty()){
+                updateFirebaseGroup(groupnamea);
+            } else {
+                Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    private void getFriendGroups() {
+    private void updateFirebaseGroup(String groupName){
+        createAndEditFriendGroupAdapter.getSelected();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                .child("Users").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
+        if(inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
+            for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
+                ref.child(groupName).child(friend.getUserID()).setValue(friend);
+            }
+        } else {
+            ref.child(inviteFriendGroupNameAdapter.getSelectedList().get(0)).removeValue();
+            for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
+                ref.child(groupName).child(friend.getUserID()).setValue(friend);
+            }
+        }
+
+        finish();
+
+    }
+
+    private void getFriendGroups(){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
                 .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -83,7 +148,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
     }
 
-    private void getFriends() {
+    private void getFriends(){
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
                 .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friends");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -93,10 +158,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
                 };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     //ID, NAME
-                    Friend friend = dataSnapshot.getValue(t);
-
-                    if (friend != null)
-                        friendsUserHas.add(friend);
+                    friendsUserHas.add(dataSnapshot.getValue(t));
                 }
 
                 display();
@@ -111,47 +173,11 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
     }
 
-    private void display() {
+    private void display(){
         inviteFriendAdapter = new InviteFriendAdapter(getApplicationContext(), friendsUserHas);
         friendsListView.setAdapter(inviteFriendAdapter);
 
         inviteFriendGroupNameAdapter = new InviteFriendGroupNameAdapter(getApplicationContext(), friendGroupNames, groups);
         friendGroups.setAdapter(inviteFriendGroupNameAdapter);
-    }
-
-    public void submitInvites(View view) {
-        String node = "";
-        if (eventToDisplay.isTotallyVisible()) {
-            node = "PublicEvents";
-        } else {
-            node = "PrivateEvents";
-        }
-
-
-        ArrayList<Friend> selectedFriends = inviteFriendAdapter.getSelectedList();
-        Log.d("myFreeTime", String.valueOf(selectedFriends.size()));
-        for (Friend invitee : selectedFriends) {
-            submitInvitesToDatabase(invitee, node);
-        }
-
-        ArrayList<String> selectedGroups = inviteFriendGroupNameAdapter.getSelectedList();
-        Log.d("myFreeTime", String.valueOf(selectedGroups.size()));
-        for (String groupName : selectedGroups) {
-            for (Friend invitee : groups.get(groupName)) {
-                submitInvitesToDatabase(invitee, node);
-            }
-        }
-
-        finish();
-    }
-
-    private void submitInvitesToDatabase(Friend invitee, String node) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(invitee.getUserID()).child(eventToDisplay.getEventID());
-        ref.setValue(eventToDisplay.isTotallyVisible());
-
-        Toast.makeText(getApplicationContext(), "Invites sent", Toast.LENGTH_LONG).show();
-
-        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child(node).child(eventToDisplay.getEventID()).child("visibleTo").child(invitee.getUserID());
-        ref2.setValue(invitee.getUserID());
     }
 }

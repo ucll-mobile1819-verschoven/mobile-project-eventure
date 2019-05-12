@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,29 +11,23 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucll.eventure.Data.Friend;
-import com.ucll.eventure.Data.User;
-import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-public class FriendsAdapter extends BaseAdapter {
+public class CreateAndEditFriendGroupAdapter extends BaseAdapter {
 
-    private List<Friend> friends;
+    private ArrayList<Friend> friends;
     private Context context;
     private LayoutInflater inflater;
 
-    public FriendsAdapter(Context context, List<Friend> friends, LayoutInflater inflater){
+    public CreateAndEditFriendGroupAdapter(Context context, ArrayList<Friend> friends, LayoutInflater inflater){
         this.friends = friends; this.context=context; this.inflater=inflater;
     }
 
@@ -57,10 +50,10 @@ public class FriendsAdapter extends BaseAdapter {
 
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(final int i, View view, ViewGroup viewGroup) {
         View vi = view;
         if(vi == null)
-            vi = LayoutInflater.from(context).inflate(R.layout.friend_layout, viewGroup, false);
+            vi = LayoutInflater.from(context).inflate(R.layout.group_friend_layout, viewGroup, false);
 
         final ImageView userPic;
         if(Build.VERSION.SDK_INT >= 21){
@@ -80,11 +73,7 @@ public class FriendsAdapter extends BaseAdapter {
 
         if(friends.get(i) != null){
             final Friend toDisplay = friends.get(i);
-            final User me = new UserDatabase(context).readFromFile();
 
-            if(toDisplay.getAccepted()){
-                checkmark.setVisibility(View.GONE);
-            }
 
             StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
             final long ONE_MEGABYTE = 1024 * 1024;
@@ -106,20 +95,15 @@ public class FriendsAdapter extends BaseAdapter {
             checkmark.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
-                    ref.removeValue();
-                    toDisplay.setAccepted(true);
-                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
-                    ref2.setValue(toDisplay);
-                    DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID()).child(me.getDatabaseID());
-                    ref3.child("name").setValue(me.getName());
-                    ref3.child("userID").setValue(me.getDatabaseID());
-                    ref3.child("accepted").setValue(true);
-                    checkmark.setVisibility(View.GONE);
+                    friends.remove(i);
                 }
             });
 
         }
         return vi;
+    }
+
+    public ArrayList<Friend> getSelected(){
+        return this.friends;
     }
 }

@@ -8,20 +8,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ucll.eventure.Data.InviteAndUser;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
 public class InviteFriendAdapter extends BaseAdapter {
-    private ArrayList<InviteAndUser> events;
+    private ArrayList<Friend> events;
     private Context context;
-    private ArrayList<InviteAndUser> selectedList;
+    private ArrayList<Friend> selectedList;
     private ArrayList<CheckBox> checkBoxes;
 
-    public InviteFriendAdapter(Context context, ArrayList<InviteAndUser> events) {
+    public InviteFriendAdapter(Context context, ArrayList<Friend> events) {
         this.context = context;
         this.events = events;
         this.selectedList = new ArrayList<>();
@@ -34,7 +33,7 @@ public class InviteFriendAdapter extends BaseAdapter {
     }
 
     @Override
-    public InviteAndUser getItem(int position) {
+    public Friend getItem(int position) {
         return events.get(position);
     }
 
@@ -58,9 +57,9 @@ public class InviteFriendAdapter extends BaseAdapter {
         checkBoxes.add(selector);
 
         if (events.get(position) != null) {
-            final InviteAndUser toDisplay = events.get(position);
+            final Friend toDisplay = events.get(position);
 
-            friendName.setText(toDisplay.getUserName());
+            friendName.setText(toDisplay.getName());
 
             vi.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -73,7 +72,7 @@ public class InviteFriendAdapter extends BaseAdapter {
         return vi;
     }
 
-    public void itemIsSelected(int position, InviteAndUser select) {
+    public void itemIsSelected(int position, Friend select) {
         CheckBox toCheck = checkBoxes.get(position);
         boolean selected = toCheck.isChecked();
         if (selected) {
@@ -86,7 +85,7 @@ public class InviteFriendAdapter extends BaseAdapter {
 
     }
 
-    public ArrayList<InviteAndUser> getSelectedList() {
+    public ArrayList<Friend> getSelectedList() {
         return this.selectedList;
     }
 

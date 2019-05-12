@@ -175,6 +175,8 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
         return super.onKeyDown(keyCode, event);
     }
 
+    //TODO: FIX Color SCHEME popups
+
     /**
      * Method that deletes account from Firebase
      */

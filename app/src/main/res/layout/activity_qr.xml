@@ -1,33 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:gravity="center"
     tools:context=".QrActivity">
 
-    <TextView
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:text="@string/yqr"
+        android:layout_height="50dp"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:gravity="center"
-        android:textSize="18dp"
-        android:layout_marginBottom="18dp"
-        android:layout_height="wrap_content" />
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:text="@string/yqr"
+            android:gravity="center"
+            android:textSize="18dp"
+            android:layout_marginBottom="18dp"
+            android:layout_height="wrap_content" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="60dp"
-        android:onClick="scanCode"
-        android:background="@android:color/transparent"
-        android:layout_below="@id/imageView"
-        android:layout_marginTop="79dp"
-        android:text="@string/MyQr" />
+        <Button
+            android:layout_width="120dp"
+            android:drawableTop="@drawable/camera"
+            android:layout_height="80dp"
+            android:onClick="scanCode"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/imageView"
+            android:layout_marginTop="85dp"
+            android:text="@string/MyQr" />
+    </LinearLayout>
 </LinearLayout>

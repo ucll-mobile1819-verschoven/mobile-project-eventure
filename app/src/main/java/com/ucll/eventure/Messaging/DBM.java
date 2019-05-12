@@ -16,7 +16,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.MainActivity;
 import com.ucll.eventure.R;
@@ -33,14 +35,28 @@ public class DBM {
 
     private void init() {
         final Boolean notification = Boolean.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString("MYNOTIFICATIONS", "true"));
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(new UserDatabase(context).readFromFile().getDatabaseID());
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(new UserDatabase(context).readFromFile().getDatabaseID());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
+                };
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Friend x = dataSnapshot1.getValue(t);
+                    if (x != null && x.getAccepted() != null){
+                        if (x.getAccepted()){
+                            ref.child(dataSnapshot1.getKey()).removeValue();
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("admin")
+                                    .child("Users").child(new UserDatabase(context).readFromFile().getDatabaseID()).child("friends").child(x.getUserID());
+                            reference.setValue(x);
+                        } else {
+                            if (notification && start)
+                                sendNotification("You have a new friend request");
 
-                if (notification && start)
-                    sendNotification("You have a new friend request");
-                start = true;
+                            start = true;
+                        }
+                    }
+                }
             }
 
             @Override

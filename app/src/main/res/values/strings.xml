@@ -48,7 +48,15 @@
 
     <string name="qrcode">Add Friend</string>
     <string name="cfg">Friend Groups</string>
+    <string name="friend_added">Friend was added</string>
     <string name="MyQr">Scan Your Friend"'s" Code</string>
     <string name="yqr">Your QR Code</string>
+    <string name="wrong2">Something went wrong while creating your account</string>
+    <string name="ysf">Your Selected Friends</string>
+
+    <string name="friendgroupActivity">Please only select a single group or a bunch of friends to edit.</string>
+    <string name="create_new_group">Create new friend group: </string>
+    <string name="group_name">Group name: </string>
+    <string name="yfgn">Your friend group</string>
 
 </resources>
