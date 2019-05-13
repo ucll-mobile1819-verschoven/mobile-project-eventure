@@ -51,6 +51,10 @@ public class PublicFragment extends Fragment {
     public void onStart() {
         super.onStart();
         setHasOptionsMenu(false);
+
+        if (getView() != null) {
+            setupView();
+        }
     }
 
     private void setupView(){

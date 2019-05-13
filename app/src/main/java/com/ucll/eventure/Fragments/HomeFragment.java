@@ -67,6 +67,10 @@ public class HomeFragment extends Fragment {
     public void onStart() {
         super.onStart();
         setHasOptionsMenu(false);
+
+        if (getView() != null) {
+            setupView();
+        }
     }
 
     @Override

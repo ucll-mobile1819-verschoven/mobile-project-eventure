@@ -128,7 +128,7 @@ public class FriendsAdapter extends BaseAdapter {
                         ref3.child("name").setValue(me.getName());
                         ref3.child("userID").setValue(me.getDatabaseID());
                         ref3.child("accepted").setValue(true);
-                        checkmark.setVisibility(View.GONE);
+                        checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
                     }
                 }
             });
