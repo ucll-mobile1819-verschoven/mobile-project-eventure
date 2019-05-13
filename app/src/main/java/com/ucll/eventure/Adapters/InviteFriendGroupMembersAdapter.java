@@ -7,16 +7,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.ucll.eventure.Data.InviteAndUser;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
 
 public class InviteFriendGroupMembersAdapter extends BaseAdapter {
-    private ArrayList<InviteAndUser> names;
+    private ArrayList<Friend> names;
     private Context context;
 
-    public InviteFriendGroupMembersAdapter(Context context, ArrayList<InviteAndUser> names) {
+    public InviteFriendGroupMembersAdapter(Context context, ArrayList<Friend> names) {
         this.context = context;
         this.names = names;
     }
@@ -27,7 +27,7 @@ public class InviteFriendGroupMembersAdapter extends BaseAdapter {
     }
 
     @Override
-    public InviteAndUser getItem(int position) {
+    public Friend getItem(int position) {
         return names.get(position);
     }
 
@@ -48,7 +48,7 @@ public class InviteFriendGroupMembersAdapter extends BaseAdapter {
         TextView friendName = vi.findViewById(R.id.friendName);
 
         if (names.get(position) != null) {
-            final String toDisplay = names.get(position).getUserName();
+            final String toDisplay = names.get(position).getName();
             friendName.setText(toDisplay);
         }
         return vi;

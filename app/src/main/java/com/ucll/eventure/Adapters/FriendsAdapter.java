@@ -2,7 +2,9 @@ package com.ucll.eventure.Adapters;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +17,12 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.ucll.eventure.Data.Friend;
@@ -24,6 +30,7 @@ import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -61,7 +68,18 @@ public class FriendsAdapter extends BaseAdapter {
         if(vi == null)
             vi = LayoutInflater.from(context).inflate(R.layout.friend_layout, viewGroup, false);
 
-        final CircleImageView userPic = vi.findViewById(R.id.friend_pic);
+        final ImageView userPic;
+        if(Build.VERSION.SDK_INT >= 21){
+            userPic = vi.findViewById(R.id.friend_pic2);
+            userPic.setVisibility(View.VISIBLE);
+
+            ImageView imageView = vi.findViewById(R.id.friend_pic1);
+            imageView.setVisibility(View.GONE);
+        } else {
+            userPic = vi.findViewById(R.id.friend_pic1);
+        }
+
+
         final TextView userName = vi.findViewById(R.id.user_name);
         final ImageView checkmark = vi.findViewById(R.id.checkMark);
         final LinearLayout friend = vi.findViewById(R.id.friend);
@@ -71,7 +89,7 @@ public class FriendsAdapter extends BaseAdapter {
             final User me = new UserDatabase(context).readFromFile();
 
             if(toDisplay.getAccepted()){
-                checkmark.setVisibility(View.GONE);
+                checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
             }
 
             StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
@@ -94,31 +112,57 @@ public class FriendsAdapter extends BaseAdapter {
             checkmark.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
-                    ref.removeValue();
-                    toDisplay.setAccepted(true);
-                    DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child(toDisplay.getUserID());
-                    ref2.setValue(toDisplay);
-                    DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID());
-                    ref3.child("name").setValue(me.getName());
-                    ref3.child("userID").setValue(me.getDatabaseID());
-                    ref3.child("accepted").setValue(true);
-                    checkmark.setVisibility(View.GONE);
+                    if(toDisplay.getAccepted()){
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
+                        ref.removeValue();
+                        friends.remove(toDisplay);
+                        notifyDataSetChanged();
+                        removeFriendFromGroups(toDisplay);
+                    } else {
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
+                        ref.removeValue();
+                        toDisplay.setAccepted(true);
+                        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
+                        ref2.setValue(toDisplay);
+                        DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID()).child(me.getDatabaseID());
+                        ref3.child("name").setValue(me.getName());
+                        ref3.child("userID").setValue(me.getDatabaseID());
+                        ref3.child("accepted").setValue(true);
+                        checkmark.setVisibility(View.GONE);
+                    }
                 }
             });
 
-            friend.setOnClickListener(
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                            Toast.makeText(context, "trying to open "+userName.getText().toString()+"\nID: "+toDisplay.getUserID(), Toast.LENGTH_SHORT).show();
-
-                        }
-                    }
-            );
-
         }
         return vi;
+    }
+
+    private void removeFriendFromGroups(final Friend friend) {
+        final User me = new UserDatabase(context).readFromFile();
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
+                .child(me.getDatabaseID()).child("friendGroups");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
+                };
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                        Friend x = dataSnapshot1.getValue(t);
+                        if(x.getUserID().equals(friend.getUserID())){
+                            ref.child(dataSnapshot.getKey()).child(x.getUserID()).removeValue();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+
+        });
+
     }
 }

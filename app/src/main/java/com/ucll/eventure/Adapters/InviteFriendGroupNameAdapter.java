@@ -1,7 +1,6 @@
 package com.ucll.eventure.Adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ucll.eventure.Data.InviteAndUser;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
@@ -19,12 +17,12 @@ import java.util.HashMap;
 
 public class InviteFriendGroupNameAdapter extends BaseAdapter {
     private ArrayList<String> groupNames;
-    private HashMap<String, ArrayList<InviteAndUser>> groupMembers;
+    private HashMap<String, ArrayList<Friend>> groupMembers;
     private Context context;
     private ArrayList<String> selectedList;
     private ArrayList<CheckBox> checkBoxes;
 
-    public InviteFriendGroupNameAdapter(Context context, ArrayList<String> groupNames, HashMap<String, ArrayList<InviteAndUser>> groupMembers) {
+    public InviteFriendGroupNameAdapter(Context context, ArrayList<String> groupNames, HashMap<String, ArrayList<Friend>> groupMembers) {
         this.context = context;
         this.groupNames = groupNames;
         this.groupMembers = groupMembers;

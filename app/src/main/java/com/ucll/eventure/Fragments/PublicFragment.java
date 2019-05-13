@@ -1,8 +1,10 @@
 package com.ucll.eventure.Fragments;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ public class PublicFragment extends Fragment {
     private EventAdapter eventAdapter;
     private TextView title;
     private View view;
+    private TextView empty;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,14 +51,15 @@ public class PublicFragment extends Fragment {
     public void onStart() {
         super.onStart();
         setHasOptionsMenu(false);
+    }
 
-        if (getView() != null) {
-            otherEventsListView = getView().findViewById(R.id.home_listview);
-            title = getView().findViewById(R.id.title2);
-            view = getView().findViewById(R.id.view2);
-            if (otherEventsListView != null) {
-                getEvents();
-            }
+    private void setupView(){
+        otherEventsListView = getView().findViewById(R.id.home_listview);
+        title = getView().findViewById(R.id.title2);
+        view = getView().findViewById(R.id.view2);
+        empty = getView().findViewById(R.id.empty_field);
+        if (otherEventsListView != null && title != null && view != null && empty != null) {
+            getEvents();
         }
     }
 
@@ -65,12 +69,7 @@ public class PublicFragment extends Fragment {
         setHasOptionsMenu(false);
 
         if (getView() != null) {
-            otherEventsListView = getView().findViewById(R.id.home_listview);
-            title = getView().findViewById(R.id.title2);
-            view = getView().findViewById(R.id.view2);
-            if (otherEventsListView != null) {
-                getEvents();
-            }
+            setupView();
         }
     }
 
@@ -83,13 +82,8 @@ public class PublicFragment extends Fragment {
     public void onActivityCreated(@NotNull Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null) {
-            otherEventsListView = getView().findViewById(R.id.home_listview);
-            if (otherEventsListView != null) {
-                getEvents();
-            }
+            setupView();
         }
-
-
     }
 
     /**
@@ -138,11 +132,20 @@ public class PublicFragment extends Fragment {
     }
 
     private void showEvents() {
-        otherEventsListView.setVisibility(View.VISIBLE);
-        eventAdapter.notifyDataSetChanged();
-        otherEventsListView.setVisibility(View.VISIBLE);
-        title.setVisibility(View.VISIBLE);
-        view.setVisibility(View.VISIBLE);
+        if(publicEvents.isEmpty()){
+            Typeface custom_font = ResourcesCompat.getFont(getContext(), R.font.font);
+            empty.setTypeface(custom_font);
+            empty.setVisibility(View.VISIBLE);
+            otherEventsListView.setVisibility(View.GONE);
+            title.setVisibility(View.GONE);
+            view.setVisibility(View.GONE);
+        } else {
+            eventAdapter.notifyDataSetChanged();
+            otherEventsListView.setVisibility(View.VISIBLE);
+            title.setVisibility(View.VISIBLE);
+            view.setVisibility(View.VISIBLE);
+        }
+
     }
 
     private boolean contains(@NotNull Event event, ArrayList<Event> events) {

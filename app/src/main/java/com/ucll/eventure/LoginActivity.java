@@ -3,7 +3,14 @@ package com.ucll.eventure;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +26,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -32,12 +40,16 @@ import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.Managers.FirstTimeLaunchedManager;
 import com.ucll.eventure.Messaging.DBM;
 import com.ucll.eventure.Messaging.MyFirebaseMessagingService;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
@@ -89,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         startServices();
     }
 
-    protected void startServices(){
+    protected void startServices() {
         FirebaseMessaging.getInstance().setAutoInitEnabled(true);
     }
 
@@ -156,11 +168,19 @@ public class LoginActivity extends AppCompatActivity {
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
                         final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<Object, String>());
+                        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+                            toCreate.setEmail("Not Given");
+                        }
                         final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
+                        users.setValue(toCreate);
                         users.child("databaseID").setValue(currentUser.getUid());
                         users.child("email").setValue(currentUser.getEmail());
+                        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+                            users.child("email").setValue("Not Given");
+                        }
                         users.child("messageID").setValue(deviceToken);
                         users.child("name").setValue(currentUser.getDisplayName());
+                        uploadPicture(currentUser.getUid());
                         new UserDatabase(getApplicationContext()).writeToFile(toCreate);
                         goToMain();
                     }
@@ -169,6 +189,49 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void uploadPicture(String id){
+        Drawable d = ContextCompat.getDrawable(this,R.drawable.person);
+        Bitmap bitmap = drawableToBitmap(d);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        StorageReference ref = FirebaseStorage.getInstance().getReference().child("profilePictures").child(id).child("profile_picture.jpg");
+        UploadTask uploadTask = ref.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(getApplicationContext(), getString(R.string.wrong2), Toast.LENGTH_LONG).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
     }
 
     private void goToMain() {

@@ -61,7 +61,7 @@
                     android:id="@+id/checkMark"
                     android:layout_marginRight="12dp"
                     android:layout_gravity="center"
-                    android:src="@drawable/check"
+                    android:src="@drawable/delete_bin"
                     android:background="@android:color/transparent"/>
 
             </LinearLayout>

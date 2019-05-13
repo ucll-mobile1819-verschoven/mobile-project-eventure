@@ -52,25 +52,12 @@ public class EventAdapter extends BaseAdapter {
 
         TextView eventTitle = vi.findViewById(R.id.eventTitle);
         TextView eventDescription = vi.findViewById(R.id.eventDescription);
-        ImageButton likeButton = vi.findViewById(R.id.likeButton);
 
         if (events.get(position) != null) {
             final Event toDisplay = events.get(position);
 
             eventTitle.setText(toDisplay.getEventTitle());
             eventDescription.setText(toDisplay.getShortDescription());
-
-            likeButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Toast.makeText(context, "button clicked in eventadapter", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-
-
-
-
 
 
             eventDescription.setOnClickListener(new View.OnClickListener() {
