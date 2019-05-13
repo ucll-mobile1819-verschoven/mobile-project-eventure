@@ -59,15 +59,19 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
 
     public void continueThru (View v){
         if(!inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
-            Toast.makeText(getApplicationContext(), getString(R.string.friendgroupActivity), Toast.LENGTH_LONG).show();
+            inviteFriendAdapter.getSelectedList().addAll(groups.get(inviteFriendGroupNameAdapter.getSelectedList().get(0)));
+            createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
+            setLayoutSelectedFriends();
+            setGroupName();
         } else {
             if(!inviteFriendAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
+                createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
                 setLayoutSelectedFriends();
             } else {
                 if(inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().size() <= 1){
+                    createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),groups.get(inviteFriendGroupNameAdapter.getSelectedList().get(0)),getLayoutInflater());
                     setLayoutSelectedFriends();
-                    EditText groupname = findViewById(R.id.group_nametext);
-                    groupname.setText(inviteFriendGroupNameAdapter.getSelectedList().get(0));
+                    setGroupName();
                 }
             }
         }
@@ -77,9 +81,12 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     private void setLayoutSelectedFriends(){
         setContentView(R.layout.create_new_friendgroup);
         ListView members = findViewById(R.id.selected_friends);
-
-        createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
         members.setAdapter(createAndEditFriendGroupAdapter);
+    }
+
+    private void setGroupName(){
+        EditText groupname = findViewById(R.id.group_nametext);
+        groupname.setText(inviteFriendGroupNameAdapter.getSelectedList().get(0));
     }
 
     public void createNewFriendGroup(View v){
@@ -100,7 +107,6 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void updateFirebaseGroup(String groupName){
-        createAndEditFriendGroupAdapter.getSelected();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
                 .child("Users").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
         if(inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
@@ -108,6 +114,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 ref.child(groupName).child(friend.getUserID()).setValue(friend);
             }
         } else {
+            Toast.makeText(getApplicationContext(), "else", Toast.LENGTH_LONG).show();
             ref.child(inviteFriendGroupNameAdapter.getSelectedList().get(0)).removeValue();
             for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
                 ref.child(groupName).child(friend.getUserID()).setValue(friend);

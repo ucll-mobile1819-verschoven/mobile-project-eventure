@@ -76,6 +76,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private ArrayList<String> links;
     private ArrayList<Bitmap> bitmaps;
     private String visibility;
+    private boolean visible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Fresco.initialize(this);
 
 
+        visible = true;
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -188,7 +190,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 break;
             case R.id.menu_edit_event:
                 Intent i = new Intent(MapsActivity.this, AddEventActivity.class);
-                i.putExtra("mode","edit");
+                i.putExtra("mode", "edit");
                 i.putExtra("event", new Gson().toJson(eventToDisplay));
                 startActivity(i);
                 finish();
@@ -323,6 +325,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                TextView attendingcount = findViewById(R.id.attendingcount);
+                if (visible) {
+                    attendingcount.setVisibility(View.GONE);
+                    visible = false;
+                } else {
+                    attendingcount.setVisibility(View.VISIBLE);
+                    visible = true;
+                }
+            }
+        });
         addMarker();
     }
 

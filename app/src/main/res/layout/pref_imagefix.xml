@@ -44,8 +44,6 @@
                 android:layout_marginTop="12dp"
                 android:maxHeight="230dp"
                 android:maxWidth="230dp"
-                tools:srcCompat="@tools:sample/avatars"
-                android:src="@drawable/person123"
                 android:minHeight="100dp"
                 android:minWidth="100dp"
                 android:layout_width="wrap_content"

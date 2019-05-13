@@ -95,7 +95,8 @@ public class CreateAndEditFriendGroupAdapter extends BaseAdapter {
             checkmark.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    friends.remove(i);
+                    friends.remove(toDisplay);
+                    notifyDataSetChanged();
                 }
             });
 

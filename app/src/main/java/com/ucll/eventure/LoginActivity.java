@@ -169,11 +169,15 @@ public class LoginActivity extends AppCompatActivity {
                     if (currentUser != null) {
                         final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<Object, String>());
                         if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
-                            toCreate.setEmail("not given");
+                            toCreate.setEmail("Not Given");
                         }
                         final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
+                        users.setValue(toCreate);
                         users.child("databaseID").setValue(currentUser.getUid());
                         users.child("email").setValue(currentUser.getEmail());
+                        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+                            users.child("email").setValue("Not Given");
+                        }
                         users.child("messageID").setValue(deviceToken);
                         users.child("name").setValue(currentUser.getDisplayName());
                         uploadPicture(currentUser.getUid());

@@ -2,18 +2,26 @@ package com.ucll.eventure.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.res.ResourcesCompat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -38,7 +46,11 @@ public class FriendsFragment extends Fragment {
     private ListView friendsList;
     private ArrayList<Friend> friends;
     private Context context;
-
+    private TextView nothingToSee;
+    private ImageView arrowDown;
+    private ArrayList<Friend> filtered;
+    private EditText searchText;
+    private FriendsAdapter adapter;
 
 
     // Database Var
@@ -74,26 +86,32 @@ public class FriendsFragment extends Fragment {
         super.onResume();
         setHasOptionsMenu(false);
         if (getView() != null) {
-            friendsList = getView().findViewById(R.id.friends_list);
-            Button qr = getView().findViewById(R.id.qrcode);
-            final Button friendGroups = getView().findViewById(R.id.friendgroups);
-            if (friendsList != null && qr != null && friendGroups != null) {
-                getFriends();
-                qr.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        qrCode();
-                    }
-                });
+            setupView();
+        }
+    }
 
-                friendGroups.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        friendGroups();
-                    }
-                });
-            }
+    private void setupView() {
+        nothingToSee = getView().findViewById(R.id.nothing_to_see);
+        arrowDown = getView().findViewById(R.id.arrow_down);
+        friendsList = getView().findViewById(R.id.friends_list);
+        Button qr = getView().findViewById(R.id.qrcode);
+        final Button friendGroups = getView().findViewById(R.id.friendgroups);
+        searchText = getView().findViewById(R.id.SearchText);
+        if (friendsList != null && qr != null && friendGroups != null && nothingToSee != null && arrowDown != null && searchText != null) {
+            getFriends();
+            qr.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    qrCode();
+                }
+            });
 
+            friendGroups.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    friendGroups();
+                }
+            });
         }
     }
 
@@ -106,26 +124,7 @@ public class FriendsFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (getView() != null) {
-            friendsList = getView().findViewById(R.id.friends_list); 
-            Button qr = getView().findViewById(R.id.qrcode);
-            final Button friendGroups = getView().findViewById(R.id.friendgroups);
-            if (friendsList != null && qr != null && friendGroups != null) {
-                getFriends();
-                qr.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        qrCode();
-                    }
-                });
-
-                friendGroups.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        friendGroups();
-                    }
-                });
-            }
-
+            setupView();
         }
     }
 
@@ -187,7 +186,7 @@ public class FriendsFragment extends Fragment {
         }
     }
 
-    private void getInvites(){
+    private void getInvites() {
         DatabaseReference firebase = FirebaseDatabase
                 .getInstance()
                 .getReference()
@@ -223,9 +222,9 @@ public class FriendsFragment extends Fragment {
         });
     }
 
-    private boolean contains(Friend friendToCheck, ArrayList<Friend> friends){
-        for (Friend friend : friends){
-            if(friend.getUserID().equals(friendToCheck.getUserID()))
+    private boolean contains(Friend friendToCheck, ArrayList<Friend> friends) {
+        for (Friend friend : friends) {
+            if (friend.getUserID().equals(friendToCheck.getUserID()))
                 return true;
         }
 
@@ -233,8 +232,43 @@ public class FriendsFragment extends Fragment {
     }
 
     private void showFriends() {
-        Log.d("getFriendsTag", "we are in showfriends");
-        FriendsAdapter adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+        filtered = new ArrayList<>();
+        adapter = new FriendsAdapter(context, filtered, getLayoutInflater());
         friendsList.setAdapter(adapter);
+        searchText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                for (Friend friend : friends) {
+                    if (friend.getName().contains(s))
+                        filtered.add(friend);
+                }
+
+
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        if (friends.size() < 1) {
+            Typeface custom_font = ResourcesCompat.getFont(getContext(), R.font.font);
+            nothingToSee.setTypeface(custom_font);
+            nothingToSee.setVisibility(View.VISIBLE);
+
+            friendsList.setVisibility(View.GONE);
+            arrowDown.setVisibility(View.VISIBLE);
+
+        } else {
+            Log.d("getFriendsTag", "we are in showfriends");
+            FriendsAdapter adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+            friendsList.setAdapter(adapter);
+        }
     }
 }

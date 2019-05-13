@@ -26,12 +26,14 @@
     <string name="short_description">Short Event Description</string>
     <string name="event_title">Event Title</string>
     <string name="add_event">Add Event</string>
+    <string name="fae">Friends are imminent</string>
     <string name="add_pics">Add pictures of the event below. To save a picture click it twice.</string>
     <string name="publics">Public Events</string>
 
     <string name="your_friends">Your Friends</string>
     <string name="friend_groups">Your Friend Groups</string>
 
+    <string name="keh">Kinda empty here...</string>
     <string name="edit_event">Edit Event</string>
     <string name="settings">Settings</string>
     <string name="logout">Log out</string>
