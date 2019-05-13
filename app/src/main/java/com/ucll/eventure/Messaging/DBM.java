@@ -34,7 +34,7 @@ public class DBM {
     }
 
     private void init() {
-        final Boolean notification = Boolean.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString("MYNOTIFICATIONS", "true"));
+        final Boolean notification = Boolean.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString("MYNOTIFICATIONS", "false"));
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(new UserDatabase(context).readFromFile().getDatabaseID());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
