@@ -1,5 +1,8 @@
 package com.ucll.eventure;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.annotation.*;
 import android.provider.ContactsContract;
@@ -9,9 +12,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -26,15 +31,19 @@ import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
 
+import org.w3c.dom.Text;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
 public class AddEventActivity extends AppCompatActivity {
-    private EditText eventTitle, shortDescription, longDescription, countryCity, streetNumber, startTime, endTime;
+    private EditText eventTitle, shortDescription, longDescription, countryCity, streetNumber;
+    private TextView startTime, endTime;
     private Spinner visibility;
     private ArrayList<String> visibilityOptions;
     private HashMap<String, ArrayList<String>> groups;
@@ -90,6 +99,35 @@ public class AddEventActivity extends AppCompatActivity {
         }
     }
 
+    Calendar date;
+    public void showDateTimePicker(final TextView textView) {
+        final Context context = this;
+        final Calendar currentDate = Calendar.getInstance();
+        date = Calendar.getInstance();
+        new DatePickerDialog(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                        date.set(year, monthOfYear, dayOfMonth);
+                        new TimePickerDialog(context, AlertDialog.THEME_DEVICE_DEFAULT_DARK, new TimePickerDialog.OnTimeSetListener() {
+                            @Override
+                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                                date.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                                date.set(Calendar.MINUTE, minute);
+                                Log.v("my tagggs", "The choosen one " + date.getTime());
+                                if(date.get(Calendar.MINUTE) < 10){
+                                    textView.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH))+"/"+String.valueOf(date.get(Calendar.MONTH))+"/"+String.valueOf(date.get(Calendar.YEAR)) +" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":0" + String.valueOf(date.get(Calendar.MINUTE)));
+
+                                } else {
+                                    textView.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH))+"/"+String.valueOf(date.get(Calendar.MONTH))+"/"+String.valueOf(date.get(Calendar.YEAR)) +" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE)));
+
+                                }
+                            }
+                        }, currentDate.get(Calendar.HOUR_OF_DAY), currentDate.get(Calendar.MINUTE), false).show();
+                    }
+                }, currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DATE)).show();
+
+    }
+
     private void setupView() {
         eventTitle = findViewById(R.id.add_event_title);
         shortDescription = findViewById(R.id.add_event_short_description);
@@ -99,6 +137,20 @@ public class AddEventActivity extends AppCompatActivity {
         startTime = findViewById(R.id.add_event_starttime);
         endTime = findViewById(R.id.add_event_endtime);
         visibility = findViewById(R.id.add_event_visible_to);
+
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateTimePicker(startTime);
+            }
+        });
+
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDateTimePicker(endTime);
+            }
+        });
 
         visibilityOptions = new ArrayList<>();
         visibilityOptions.add("Choose who the event will be visible for");
