@@ -115,7 +115,7 @@ public class AddEventActivity extends AppCompatActivity {
                                 date.set(Calendar.MINUTE, minute);
                                 Log.v("my tagggs", "The choosen one " + date.getTime());
                                 if(date.get(Calendar.MINUTE) < 10){
-                                    textView.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH))+"/"+String.valueOf(date.get(Calendar.MONTH))+"/"+String.valueOf(date.get(Calendar.YEAR)) +" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":0" + String.valueOf(date.get(Calendar.MINUTE)));
+                                    textView.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH))+"/"+String.valueOf(date.get(Calendar.MONTH) + 1)+"/"+String.valueOf(date.get(Calendar.YEAR)) +" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":0" + String.valueOf(date.get(Calendar.MINUTE)));
 
                                 } else {
                                     textView.setText(String.valueOf(date.get(Calendar.DAY_OF_MONTH))+"/"+String.valueOf(date.get(Calendar.MONTH))+"/"+String.valueOf(date.get(Calendar.YEAR)) +" "+String.valueOf(date.get(Calendar.HOUR_OF_DAY)) + ":" + String.valueOf(date.get(Calendar.MINUTE)));

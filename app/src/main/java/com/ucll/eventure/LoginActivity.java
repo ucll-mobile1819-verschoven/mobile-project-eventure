@@ -34,8 +34,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
@@ -163,32 +167,56 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
             @Override
             public void onSuccess(InstanceIdResult instanceIdResult) {
-                String deviceToken = instanceIdResult.getToken();
+                final String deviceToken = instanceIdResult.getToken();
                 FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
                         final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<Object, String>());
-                        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
-                            toCreate.setEmail("Not Given");
-                        }
-                        final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
-                        users.setValue(toCreate);
-                        users.child("databaseID").setValue(currentUser.getUid());
-                        users.child("email").setValue(currentUser.getEmail());
-                        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
-                            users.child("email").setValue("Not Given");
-                        }
-                        users.child("messageID").setValue(deviceToken);
-                        users.child("name").setValue(currentUser.getDisplayName());
-                        uploadPicture(currentUser.getUid());
-                        new UserDatabase(getApplicationContext()).writeToFile(toCreate);
-                        goToMain();
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
+                        ref.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if(!dataSnapshot.exists()){
+                                    continueCreation(currentUser, toCreate, deviceToken);
+                                } else {
+                                    GenericTypeIndicator<User> t = new GenericTypeIndicator<User>() {
+                                    };
+                                    User me = dataSnapshot.getValue(t);
+                                    new UserDatabase(getApplicationContext()).writeToFile(me);
+                                    goToMain();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
                 } else {
                     goToMain();
                 }
             }
         });
+    }
+
+    private void continueCreation(FirebaseUser currentUser, User toCreate, String deviceToken){
+        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+            toCreate.setEmail("Not Given");
+        }
+        final DatabaseReference users = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
+        users.setValue(toCreate);
+        users.child("databaseID").setValue(currentUser.getUid());
+        users.child("email").setValue(currentUser.getEmail());
+        if (currentUser.getEmail() == null || currentUser.getEmail().isEmpty()) {
+            users.child("email").setValue("Not Given");
+        }
+        users.child("messageID").setValue(deviceToken);
+        users.child("name").setValue(currentUser.getDisplayName());
+        uploadPicture(currentUser.getUid());
+        new UserDatabase(getApplicationContext()).writeToFile(toCreate);
+        goToMain();
     }
 
     private void uploadPicture(String id){
