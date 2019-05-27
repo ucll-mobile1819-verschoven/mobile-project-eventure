@@ -299,6 +299,8 @@ public class HomeFragment extends Fragment {
             view1.setVisibility(View.GONE);
             title1.setVisibility(View.GONE);
             attendingListView.setVisibility(View.GONE);
+        } else {
+            empty.setVisibility(View.GONE);
         }
         if (myOtherEvents.size() == 0) {
             view2.setVisibility(View.GONE);

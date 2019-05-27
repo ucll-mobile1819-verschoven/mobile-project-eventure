@@ -170,6 +170,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             menu.getItem(0).setVisible(true);
             menu.getItem(1).setVisible(false);
             menu.getItem(2).setVisible(true);
+            menu.getItem(3).setVisible(true);
         }
         return true;
     }
