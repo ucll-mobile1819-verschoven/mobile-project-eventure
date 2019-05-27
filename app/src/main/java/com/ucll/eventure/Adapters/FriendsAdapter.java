@@ -1,6 +1,7 @@
 package com.ucll.eventure.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -25,9 +26,11 @@ import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.ucll.eventure.ChatActivity;
 import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
+import com.ucll.eventure.MapsActivity;
 import com.ucll.eventure.R;
 
 import java.util.ArrayList;
@@ -108,6 +111,14 @@ public class FriendsAdapter extends BaseAdapter {
 
 
             userName.setText(toDisplay.getName());
+            userName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(context, ChatActivity.class);
+                    i.putExtra("chatID", toDisplay.getUserID()+"_"+me.getDatabaseID());
+                    context.startActivity(i);
+                }
+            });
 
             checkmark.setOnClickListener(new View.OnClickListener() {
                 @Override

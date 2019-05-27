@@ -269,7 +269,7 @@ public class HomeFragment extends Fragment {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                    //Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
                 }
 
             });

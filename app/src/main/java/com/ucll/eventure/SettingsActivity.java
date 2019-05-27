@@ -129,6 +129,9 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
                     LoginManager.getInstance().logOut();
+                    Intent i = new Intent(SettingsActivity.this, LoginActivity.class);
+                    FirebaseAuth.getInstance().signOut();
+                    startActivity(i);
                     finish();
                     return false;
                 }
