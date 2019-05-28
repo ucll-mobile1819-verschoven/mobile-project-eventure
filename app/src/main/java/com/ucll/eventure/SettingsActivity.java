@@ -107,9 +107,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             preference1.setClickListener(new EditTextPreferenceListener() {
                 @Override
                 public void onItemClick(EditTextPreference preference, String result) {
-                    preference.setSummary(result);
-                    if (validEmail(result))
+
+                    if (validEmail(result)){
                         updateUser(me, "email", result);
+                        preference.setSummary(result);
+                    }
+
                     else
                         Toast.makeText(getApplicationContext(), getString(R.string.format_input), Toast.LENGTH_LONG).show();
                 }
@@ -145,6 +148,12 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
 
     private void editPic(){
         Intent i = new Intent(SettingsActivity.this, SelectImage.class);
+        startActivity(i);
+        finish();
+    }
+
+    public void goBack(View view){
+        Intent i = new Intent(SettingsActivity.this, MainActivity.class);
         startActivity(i);
         finish();
     }

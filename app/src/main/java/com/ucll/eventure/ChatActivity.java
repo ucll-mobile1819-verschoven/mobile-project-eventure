@@ -48,6 +48,7 @@ public class ChatActivity extends AppCompatActivity {
             messageFied = findViewById(R.id.edittext_chatbox);
             listView.setAdapter(messageAdapter);
             messageAdapter.notifyDataSetChanged();
+            listView.setSelection(messageAdapter.getCount() - 1);
             getMessages(chatID);
         }
 
@@ -61,7 +62,7 @@ public class ChatActivity extends AppCompatActivity {
                 };
                 for(DataSnapshot snapshot : dataSnapshot.getChildren()){
                     Message toSee = snapshot.getValue(t);
-                    if(!messages.contains(toSee))
+                    if(!contains(toSee, messages) && !snapshot.getKey().equals("visibleTo"))
                         messages.add(toSee);
                 }
 
@@ -71,6 +72,7 @@ public class ChatActivity extends AppCompatActivity {
                     String[] index = chatID.split("_");
                     getMessages(index[1]+"_"+index[0]);
                     chatID = index[1]+"_"+index[0];
+                    getMessages(chatID);
                 }
                 displayMessages();
             }
@@ -80,6 +82,16 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private boolean contains(Message message, ArrayList<Message> messages){
+        for(Message message1 : messages){
+            if(message.getMessage().equals(message1.getMessage())){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void displayMessages(){
@@ -93,10 +105,9 @@ public class ChatActivity extends AppCompatActivity {
 
         if(!hasMessages){
             String[] x = chatID.split("_");
-            chatRef.child(chatID).child("visibleTo").setValue(x[0]);
-            chatRef.child(chatID).child("visibleTo").setValue(x[1]);
+            chatRef.child(chatID).child("visibleTo").child(x[0]).setValue(x[0]);
+            chatRef.child(chatID).child("visibleTo").child(x[1]).setValue(x[1]);
         }
-
         chatRef.child(chatID).push().setValue(message);
         messages.add(message);
         messageAdapter.notifyDataSetChanged();

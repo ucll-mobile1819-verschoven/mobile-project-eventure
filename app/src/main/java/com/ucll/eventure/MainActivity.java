@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     public void goToSettings(View v){
         Intent i = new Intent(this, SettingsActivity.class);
         startActivity(i);
+        finish();
     }
 }
 
