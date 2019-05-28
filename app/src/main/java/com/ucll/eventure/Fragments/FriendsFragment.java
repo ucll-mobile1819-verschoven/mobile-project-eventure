@@ -226,9 +226,12 @@ public class FriendsFragment extends Fragment {
     }
 
     private boolean contains(Friend friendToCheck, ArrayList<Friend> friends) {
-        for (Friend friend : friends) {
-            if (friend.getUserID().equals(friendToCheck.getUserID()))
-                return true;
+        if(friendToCheck != null && friendToCheck.getUserID() != null) {
+            for (Friend friend : friends) {
+                if(friend != null && friend.getUserID() != null)
+                    if (friend.getUserID().equals(friendToCheck.getUserID()))
+                        return true;
+            }
         }
 
         return false;
@@ -236,6 +239,7 @@ public class FriendsFragment extends Fragment {
 
     private void showFriends() {
         filtered = new ArrayList<>();
+        if (isAdded())
         adapter = new FriendsAdapter(context, filtered, getLayoutInflater());
         friendsList.setAdapter(adapter);
         searchText.addTextChangedListener(new TextWatcher() {
@@ -270,8 +274,10 @@ public class FriendsFragment extends Fragment {
 
         } else {
             Log.d("getFriendsTag", "we are in showfriends");
-            FriendsAdapter adapter = new FriendsAdapter(context, friends, getLayoutInflater());
-            friendsList.setAdapter(adapter);
+            if (isAdded()) {
+                FriendsAdapter adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+                friendsList.setAdapter(adapter);
+            }
         }
     }
 }

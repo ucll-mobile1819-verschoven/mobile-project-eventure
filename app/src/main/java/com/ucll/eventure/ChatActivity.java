@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -37,8 +38,10 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         me = new UserDatabase(getApplicationContext()).readFromFile();
 
-        if(getIntent().getStringExtra("chatID") != null && !getIntent().getStringExtra("chatID").isEmpty()){
+        if(getIntent().getStringExtra("chatID") != null && !getIntent().getStringExtra("chatID").isEmpty() && getIntent().getStringExtra("friendName") != null){
             chatID = getIntent().getStringExtra("chatID");
+            TextView title = findViewById(R.id.toolbar_title);
+            title.setText(getIntent().getStringExtra("friendName"));
             chatRef = FirebaseDatabase.getInstance().getReference().child("Chats");
             messages = new ArrayList<>();
             hasMessages = false;
@@ -46,6 +49,14 @@ public class ChatActivity extends AppCompatActivity {
             messageAdapter = new MessageAdapter(this, messages, me);
             listView = findViewById(R.id.message_list);
             messageFied = findViewById(R.id.edittext_chatbox);
+            messageFied.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if(hasFocus){
+                        listView.setSelection(messageAdapter.getCount() - 1);
+                    }
+                }
+            });
             listView.setAdapter(messageAdapter);
             messageAdapter.notifyDataSetChanged();
             listView.setSelection(messageAdapter.getCount() - 1);
@@ -73,8 +84,6 @@ public class ChatActivity extends AppCompatActivity {
                     getMessages(index[1]+"_"+index[0]);
                     chatID = index[1]+"_"+index[0];
                     getMessages(chatID);
-
-                    Toast.makeText(getApplicationContext(), chatID, Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -104,16 +113,20 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     public void sendMessage(View view){
-        Message message = new Message(me.getDatabaseID(), false, messageFied.getText().toString());
-        messageFied.setText("");
+        if(!messageFied.getText().toString().isEmpty()){
+            Message message = new Message(me.getDatabaseID(), false, messageFied.getText().toString());
+            messageFied.setText("");
 
-        if(!hasMessages){
-            String[] x = chatID.split("_");
-            chatRef.child(chatID).child("visibleTo").child(x[0]).setValue(x[0]);
-            chatRef.child(chatID).child("visibleTo").child(x[1]).setValue(x[1]);
+            if(!hasMessages){
+                String[] x = chatID.split("_");
+                chatRef.child(chatID).child("visibleTo").child(x[0]).setValue(x[0]);
+                chatRef.child(chatID).child("visibleTo").child(x[1]).setValue(x[1]);
+            }
+            chatRef.child(chatID).push().setValue(message);
+            messages.add(message);
+            messageAdapter.notifyDataSetChanged();
+            listView.setSelection(messageAdapter.getCount() - 1);
         }
-        chatRef.child(chatID).push().setValue(message);
-        messages.add(message);
-        messageAdapter.notifyDataSetChanged();
+
     }
 }
