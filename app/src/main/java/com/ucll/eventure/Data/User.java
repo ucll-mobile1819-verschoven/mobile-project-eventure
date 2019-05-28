@@ -6,12 +6,12 @@ public class User {
     private String name;
     private String email;
     private String messageID;
-    private HashMap<Object, String> friends;
+    private HashMap<String, Object> friends;
 
     public User() {
     }
 
-    public User(String databaseID, String name, String email, String messageID, HashMap<Object, String> friends) {
+    public User(String databaseID, String name, String email, String messageID, HashMap<String, Object> friends) {
         this.databaseID = databaseID;
         this.name = name;
         this.email = email;
@@ -51,11 +51,11 @@ public class User {
         this.messageID = messageID;
     }
 
-    public HashMap<Object, String> getFriends() {
+    public HashMap<String, Object> getFriends() {
         return friends;
     }
 
-    public void setFriends(HashMap<Object, String> friends) {
+    public void setFriends(HashMap<String, Object> friends) {
         this.friends = friends;
     }
 }

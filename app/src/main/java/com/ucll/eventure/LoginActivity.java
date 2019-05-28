@@ -171,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
-                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<Object, String>());
+                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<String, Object>());
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
                         ref.addValueEventListener(new ValueEventListener() {
                             @Override

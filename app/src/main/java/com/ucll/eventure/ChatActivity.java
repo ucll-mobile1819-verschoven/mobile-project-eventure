@@ -58,23 +58,25 @@ public class ChatActivity extends AppCompatActivity {
         chatRef.child(chatIDs).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<Message> t = new GenericTypeIndicator<Message>() {
-                };
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    Message toSee = snapshot.getValue(t);
-                    if(!contains(toSee, messages) && !snapshot.getKey().equals("visibleTo"))
-                        messages.add(toSee);
-                }
-
-                if(!messages.isEmpty()){
+                if(dataSnapshot.exists()){
+                    GenericTypeIndicator<Message> t = new GenericTypeIndicator<Message>() {
+                    };
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        Message toSee = snapshot.getValue(t);
+                        if(!contains(toSee, messages) && !snapshot.getKey().equals("visibleTo"))
+                            messages.add(toSee);
+                    }
                     hasMessages = true;
+                    displayMessages();
                 } else {
                     String[] index = chatID.split("_");
                     getMessages(index[1]+"_"+index[0]);
                     chatID = index[1]+"_"+index[0];
                     getMessages(chatID);
+
+                    Toast.makeText(getApplicationContext(), chatID, Toast.LENGTH_LONG).show();
                 }
-                displayMessages();
+
             }
 
             @Override
@@ -86,8 +88,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private boolean contains(Message message, ArrayList<Message> messages){
         for(Message message1 : messages){
-            if(message.getMessage().equals(message1.getMessage())){
-                return true;
+            if(message != null && message1 != null && message.getMessage() != null && message1.getMessage() != null){
+                if(message.getMessage().equals(message1.getMessage())){
+                    return true;
+                }
             }
         }
 

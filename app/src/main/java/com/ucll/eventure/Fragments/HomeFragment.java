@@ -207,9 +207,12 @@ public class HomeFragment extends Fragment {
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.d("eventure", databaseError.getMessage());
-                    if (myOtherEvents != null && myAttendingEvents != null) {
-                        checkMe(step, goingEvents);
+                    if(context != null){
+                        if (myOtherEvents != null && myAttendingEvents != null) {
+                            checkMe(step, goingEvents);
+                        }
                     }
+
                     //Toast.makeText(context, databaseError.getMessage() + ", please contact support", Toast.LENGTH_LONG).show();
                 }
 
@@ -218,18 +221,21 @@ public class HomeFragment extends Fragment {
     }
 
     private void checkMe(String step, ArrayList<String> goingEvents){
-        if(step.equals("start")){
-            getEvents(goingEvents, "PrivateEvents","second");
-        } else {
-            if(step.equals("second")){
-                getEvents(privateInvites, "PrivateEvents", "third");
+        if(context != null && getActivity() != null){
+            if(step.equals("start")){
+                getEvents(goingEvents, "PrivateEvents","second");
             } else {
-                if(step.equals("third")){
-                    getPublicEvents();
-                    Log.d("interest", "getEvents called");
+                if(step.equals("second")){
+                    getEvents(privateInvites, "PrivateEvents", "third");
+                } else {
+                    if(step.equals("third")){
+                        getPublicEvents();
+                        Log.d("interest", "getEvents called");
+                    }
                 }
             }
         }
+
     }
 
     /**

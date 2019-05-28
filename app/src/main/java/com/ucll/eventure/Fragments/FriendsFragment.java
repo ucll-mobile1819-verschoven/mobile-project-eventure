@@ -160,7 +160,7 @@ public class FriendsFragment extends Fragment {
                     .child("friends");
 
 
-            firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+            firebase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -198,7 +198,7 @@ public class FriendsFragment extends Fragment {
                 .child(new UserDatabase(context).readFromFile().getDatabaseID());
 
 
-        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
