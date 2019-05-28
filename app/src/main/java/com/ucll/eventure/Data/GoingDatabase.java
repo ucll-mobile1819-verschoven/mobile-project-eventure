@@ -52,6 +52,8 @@ public class GoingDatabase {
         } catch (IOException e) {
             Log.d("LocalDBreadFromFile()", "IOException for userobject");
             return new ArrayList<>();
+        } catch (Exception e){
+            return new ArrayList<>();
         }
 
         if(eventIDs == null)
