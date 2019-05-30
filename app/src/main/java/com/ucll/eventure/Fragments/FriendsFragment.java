@@ -150,6 +150,8 @@ public class FriendsFragment extends Fragment {
             Log.d("getFriendsTag", "we are in else");
             friends = new ArrayList<>();
             friends.clear();
+            adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+            friendsList.setAdapter(adapter);
             firebase = FirebaseDatabase
                     .getInstance()
                     .getReference()
@@ -239,9 +241,6 @@ public class FriendsFragment extends Fragment {
 
     private void showFriends() {
         filtered = new ArrayList<>();
-        if (isAdded())
-        adapter = new FriendsAdapter(context, filtered, getLayoutInflater());
-        friendsList.setAdapter(adapter);
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -250,13 +249,24 @@ public class FriendsFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                for (Friend friend : friends) {
-                    if (friend.getName().contains(s))
-                        filtered.add(friend);
+                if(isAdded()){
+                    FriendsAdapter adapter = new FriendsAdapter(context, filtered, getLayoutInflater());
+                    friendsList.setAdapter(adapter);
+                    for (Friend friend : friends) {
+                        if (friend.getName().toLowerCase().contains(s.toString().toLowerCase()))
+                            if(!filtered.contains(friend))
+                                filtered.add(friend);
+                    }
+
+                    if(s.toString().isEmpty()) {
+                        filtered = new ArrayList<>();
+                        adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+                        friendsList.setAdapter(adapter);
+                    }
+
+                    adapter.notifyDataSetChanged();
                 }
 
-
-                adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -275,8 +285,7 @@ public class FriendsFragment extends Fragment {
         } else {
             Log.d("getFriendsTag", "we are in showfriends");
             if (isAdded()) {
-                FriendsAdapter adapter = new FriendsAdapter(context, friends, getLayoutInflater());
-                friendsList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
             }
         }
     }

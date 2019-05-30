@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/Scroll"
     android:fillViewport="true"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
-    <LinearLayout
-        android:id="@+id/LinearLayout01"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:weightSum="3"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical">
 
         <!-- content goes here -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight=".28"
-            android:layout_height="0dp">
+            android:id="@+id/n1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/n2"
+            android:layout_height="wrap_content">
             <EditText
                 android:ems="10"
                 android:hint="Search..."
@@ -32,8 +29,12 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="2.48"
             android:gravity="center"
+            app:layout_constraintBottom_toTopOf="@+id/n3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/n1"
+            android:id="@+id/n2"
             android:weightSum="2"
             android:orientation="vertical"
             android:layout_height="0dp">
@@ -69,8 +70,11 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight=".24"
             android:gravity="center"
+            android:id="@+id/n3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_gravity="center"
             android:layout_height="0dp">
             <Button
@@ -95,7 +99,5 @@
                 android:text="@string/cfg" />
         </LinearLayout>
 
-
-    </LinearLayout>
-</ScrollView>
+</android.support.constraint.ConstraintLayout>
 
