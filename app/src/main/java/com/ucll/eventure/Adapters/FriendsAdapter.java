@@ -91,7 +91,7 @@ public class FriendsAdapter extends BaseAdapter {
             final Friend toDisplay = friends.get(i);
             final User me = new UserDatabase(context).readFromFile();
 
-            if(toDisplay.getAccepted()){
+            if(toDisplay != null && toDisplay.getAccepted() != null && toDisplay.getAccepted()){
                 checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
             }
 

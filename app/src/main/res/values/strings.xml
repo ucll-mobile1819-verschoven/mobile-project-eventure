@@ -10,6 +10,7 @@
     <string name="title_activity_maps">Map</string>
 
 
+    <string name="nao">You cannot edit a group you are not admin of</string>
     <string name="events_you_are_attending">Events You Are Attending</string>
     <string name="invite_events">Event Invites</string>
 

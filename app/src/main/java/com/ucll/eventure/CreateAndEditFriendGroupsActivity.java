@@ -1,6 +1,8 @@
 package com.ucll.eventure;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -34,6 +36,9 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     private InviteFriendAdapter inviteFriendAdapter;
     private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
     private CreateAndEditFriendGroupAdapter createAndEditFriendGroupAdapter;
+    private HashMap<String, String> GroupNameID;
+    private DatabaseReference deleteRef;
+    private boolean editing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +50,9 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
         groups = new HashMap<>();
         friendGroupNames = new ArrayList<>();
         friendsUserHas = new ArrayList<>();
+        GroupNameID = new HashMap<>();
 
+        editing = false;
         getFriendGroups();
     }
 
@@ -62,16 +69,14 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
             inviteFriendAdapter.getSelectedList().addAll(groups.get(inviteFriendGroupNameAdapter.getSelectedList().get(0)));
             createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
             setLayoutSelectedFriends();
-            setGroupName();
         } else {
             if(!inviteFriendAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
                 createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),inviteFriendAdapter.getSelectedList(),getLayoutInflater());
                 setLayoutSelectedFriends();
             } else {
-                if(inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().size() <= 1){
+                if(inviteFriendAdapter.getSelectedList().isEmpty() && !inviteFriendGroupNameAdapter.getSelectedList().isEmpty() && inviteFriendGroupNameAdapter.getSelectedList().size() == 1){
                     createAndEditFriendGroupAdapter = new CreateAndEditFriendGroupAdapter(getApplicationContext(),groups.get(inviteFriendGroupNameAdapter.getSelectedList().get(0)),getLayoutInflater());
                     setLayoutSelectedFriends();
-                    setGroupName();
                 }
             }
         }
@@ -79,13 +84,47 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void setLayoutSelectedFriends(){
+        final User me = new UserDatabase(getApplicationContext()).readFromFile();
+        final Context context = this;
+        if(!inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
+            String groupID = GroupNameID.get(inviteFriendGroupNameAdapter.getSelectedList().get(0));
+
+            deleteRef = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
+            DatabaseReference updateRef = deleteRef.child("admin");
+            updateRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    GenericTypeIndicator<String> t = new GenericTypeIndicator<String>() {
+                    };
+                    if(me.getDatabaseID().equals(dataSnapshot.getValue().toString())){
+                        completeView();
+                        editing = true;
+                    } else {
+                        Toast.makeText(context, context.getString(R.string.nao), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        } else {
+            completeView();
+        }
+    }
+
+    private void completeView(){
         setContentView(R.layout.create_new_friendgroup);
         ListView members = findViewById(R.id.selected_friends);
         members.setAdapter(createAndEditFriendGroupAdapter);
+        setGroupName();
     }
 
     private void setGroupName(){
         EditText groupname = findViewById(R.id.group_nametext);
+        if(!inviteFriendGroupNameAdapter.getSelectedList().isEmpty())
         groupname.setText(inviteFriendGroupNameAdapter.getSelectedList().get(0));
     }
 
@@ -107,22 +146,28 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void updateFirebaseGroup(String groupName){
-        FirebaseDatabase updateRef = FirebaseDatabase
         DatabaseReference startRef = FirebaseDatabase.getInstance().getReference().child("friendGroups");
         DatabaseReference ref = startRef.push();
+        if(editing){
+            ref = deleteRef;
+            ref.removeValue();
+        }
         if(inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
             for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
                 ref.child(friend.getUserID()).setValue(friend);
             }
         } else {
             ref.child(inviteFriendGroupNameAdapter.getSelectedList().get(0)).removeValue();
-            for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
+            for(Friend friend : createAndEditFriendGroupAdapter.getSelected()) {
                 ref.child(friend.getUserID()).setValue(friend);
             }
         }
 
-        ref.child("friendGroupName").setValue(groupName);
-        ref.child("admin").setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
+        if(!createAndEditFriendGroupAdapter.isEmpty()){
+            ref.child("friendGroupName").setValue(groupName);
+            ref.child("admin").setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
+        }
+
 
         finish();
 
@@ -136,7 +181,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                 };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    Toast.makeText(getApplicationContext(), dataSnapshot.child("friendGroupName").getValue().toString(), Toast.LENGTH_LONG).show();
+
                     friendGroupNames.add(dataSnapshot.child("friendGroupName").getValue().toString());
                     ArrayList<Friend> ids = new ArrayList<>();
                     for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
@@ -145,6 +190,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                     }
 
                     groups.put(dataSnapshot.child("friendGroupName").getValue().toString(), ids);
+                    GroupNameID.put(dataSnapshot.child("friendGroupName").getValue().toString(), dataSnapshot.getKey());
                 }
 
                 getFriends();
