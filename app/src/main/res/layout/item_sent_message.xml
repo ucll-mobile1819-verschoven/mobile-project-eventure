@@ -10,7 +10,7 @@
         android:id="@+id/message"
         android:text="hi man, how are you?"
         android:layout_marginEnd="22dp"
-        android:background="@drawable/text_sent_rounded"
+        android:background="@drawable/text_received_rounded"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"

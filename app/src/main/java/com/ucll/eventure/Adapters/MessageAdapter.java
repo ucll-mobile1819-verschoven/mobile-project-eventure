@@ -46,7 +46,7 @@ public class MessageAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, final View convertView, ViewGroup parent) {
-        View vi = convertView;
+        View vi = null;
         if (events.get(position) != null) {
             final Message toDisplay = events.get(position);
 

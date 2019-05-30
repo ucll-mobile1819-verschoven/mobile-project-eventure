@@ -101,6 +101,12 @@ public class FriendsAdapter extends BaseAdapter {
                 @Override
                 public void onSuccess(byte[] bytes) {
                     userPic.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                    userPic.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            startChat(toDisplay, me);
+                        }
+                    });
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -114,9 +120,7 @@ public class FriendsAdapter extends BaseAdapter {
             userName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent i = new Intent(context, ChatActivity.class);
-                    i.putExtra("chatID", toDisplay.getUserID()+"_"+me.getDatabaseID());
-                    context.startActivity(i);
+                    startChat(toDisplay, me);
                 }
             });
 
@@ -146,6 +150,13 @@ public class FriendsAdapter extends BaseAdapter {
 
         }
         return vi;
+    }
+
+    private void startChat(Friend toDisplay, User me){
+        Intent i = new Intent(context, ChatActivity.class);
+        i.putExtra("chatID", toDisplay.getUserID()+"_"+me.getDatabaseID());
+        i.putExtra("friendName", toDisplay.getName());
+        context.startActivity(i);
     }
 
     private void removeFriendFromGroups(final Friend friend) {
