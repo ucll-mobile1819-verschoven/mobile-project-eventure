@@ -144,6 +144,9 @@ public class FriendsAdapter extends BaseAdapter {
                         ref3.child("userID").setValue(me.getDatabaseID());
                         ref3.child("accepted").setValue(true);
                         checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
+
+                        DatabaseReference ref4 = FirebaseDatabase.getInstance().getReference().child("DeletedFriends").child(toDisplay.getUserID()).child(me.getDatabaseID());
+                        ref4.setValue(me.getDatabaseID());
                     }
                 }
             });
