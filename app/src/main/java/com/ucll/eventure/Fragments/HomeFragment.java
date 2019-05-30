@@ -54,6 +54,7 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        context = getContext();
         return inflater.inflate(R.layout.home, container, false);
     }
 
@@ -344,9 +345,11 @@ public class HomeFragment extends Fragment {
      * @return boolean that indicated presence duplicate object
      */
     private boolean contains(Event event, ArrayList<Event> events) {
-        for (Event event1 : events) {
-            if (event1 != null && event1.getEventID().equals(event.getEventID()))
-                return true;
+        if(event != null && event.getEventID() != null){
+            for (Event event1 : events) {
+                if (event1 != null && event1.getEventID() != null && event1.getEventID().equals(event.getEventID()))
+                    return true;
+            }
         }
 
         return false;

@@ -153,9 +153,12 @@ public class PublicFragment extends Fragment {
     }
 
     private boolean contains(@NotNull Event event, ArrayList<Event> events) {
-        for (Event event1 : events) {
-            if (event1 != null && event1.getEventID().equals(event.getEventID()))
-                return true;
+        if(event != null && event.getEventID() != null) {
+
+            for (Event event1 : events) {
+                if (event1 != null && event1.getEventID() != null && event1.getEventID().equals(event.getEventID()))
+                    return true;
+            }
         }
 
         return false;

@@ -93,61 +93,63 @@ public class FriendsAdapter extends BaseAdapter {
 
             if(toDisplay != null && toDisplay.getAccepted() != null && toDisplay.getAccepted()){
                 checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
+
+                StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
+                final long ONE_MEGABYTE = 1024 * 1024;
+                httpsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        userPic.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+                        userPic.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                startChat(toDisplay, me);
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
+
+
+                userName.setText(toDisplay.getName());
+                userName.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startChat(toDisplay, me);
+                    }
+                });
+
+                checkmark.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(toDisplay.getAccepted()){
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
+                            ref.removeValue();
+                            friends.remove(toDisplay);
+                            notifyDataSetChanged();
+                            removeFriendFromGroups(toDisplay);
+                        } else {
+                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
+                            ref.removeValue();
+                            toDisplay.setAccepted(true);
+                            DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
+                            ref2.setValue(toDisplay);
+                            DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID()).child(me.getDatabaseID());
+                            ref3.child("name").setValue(me.getName());
+                            ref3.child("userID").setValue(me.getDatabaseID());
+                            ref3.child("accepted").setValue(true);
+                            checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
+
+                        }
+                    }
+                });
             }
 
-            StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
-            final long ONE_MEGABYTE = 1024 * 1024;
-            httpsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    userPic.setImageBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
-                    userPic.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            startChat(toDisplay, me);
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle any errors
-                }
-            });
 
-
-            userName.setText(toDisplay.getName());
-            userName.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startChat(toDisplay, me);
-                }
-            });
-
-            checkmark.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(toDisplay.getAccepted()){
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
-                        ref.removeValue();
-                        friends.remove(toDisplay);
-                        notifyDataSetChanged();
-                        removeFriendFromGroups(toDisplay);
-                    } else {
-                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
-                        ref.removeValue();
-                        toDisplay.setAccepted(true);
-                        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
-                        ref2.setValue(toDisplay);
-                        DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID()).child(me.getDatabaseID());
-                        ref3.child("name").setValue(me.getName());
-                        ref3.child("userID").setValue(me.getDatabaseID());
-                        ref3.child("accepted").setValue(true);
-                        checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
-
-                    }
-                }
-            });
 
         }
         return vi;
