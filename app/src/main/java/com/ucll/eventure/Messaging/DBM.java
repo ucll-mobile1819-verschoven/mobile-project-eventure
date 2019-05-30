@@ -82,24 +82,6 @@ public class DBM {
             }
         });
 
-        DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("DeletedFriends").child(me.getDatabaseID());
-        ref3.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    if(snapshot.getKey() != null) {
-                        DatabaseReference ref4 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID())
-                                .child("friends").child(snapshot.getKey());
-                        ref4.removeValue();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     /**
