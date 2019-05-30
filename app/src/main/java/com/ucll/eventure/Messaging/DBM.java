@@ -19,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.ucll.eventure.Data.Friend;
+import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.MainActivity;
 import com.ucll.eventure.R;
@@ -34,8 +35,9 @@ public class DBM {
     }
 
     private void init() {
+        final User me = new UserDatabase(context).readFromFile();
         final Boolean notification = Boolean.valueOf(PreferenceManager.getDefaultSharedPreferences(context).getString("MYNOTIFICATIONS", "false"));
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(new UserDatabase(context).readFromFile().getDatabaseID());
+        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -65,13 +67,32 @@ public class DBM {
             }
         });
 
-        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(new UserDatabase(context).readFromFile().getDatabaseID());
+        DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("eventInvites").child(me.getDatabaseID());
         ref2.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (notification && start)
                     sendNotification("You have a new event invite");
                 start = true;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("DeletedFriends").child(me.getDatabaseID());
+        ref3.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    if(snapshot.getKey() != null) {
+                        DatabaseReference ref4 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID())
+                                .child("friends").child(snapshot.getKey());
+                        ref4.removeValue();
+                    }
+                }
             }
 
             @Override
