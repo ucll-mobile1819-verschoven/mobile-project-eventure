@@ -171,9 +171,11 @@ public class FriendsFragment extends Fragment {
                         };
                         if (snapshot != null) {
                             Friend friend = snapshot.getValue(t);
+                            Log.d("testmebitchGFriends", friend.getName());
                             if (!contains(friend, friends) && friend != null) {
                                 friends.add(friend);
                             }
+                            Log.d("testmebitchGFriends", String.valueOf(friends.size()));
                         }
                     }
 
@@ -209,9 +211,11 @@ public class FriendsFragment extends Fragment {
                     };
                     if (snapshot != null) {
                         Friend friend = snapshot.getValue(t);
+                        Log.d("testmebitchGInvites", friend.getName());
                         if (!contains(friend, friends) && friend != null) {
                             friends.add(friend);
                         }
+                        Log.d("testmebitchGInvites", friend.getName());
                     }
                 }
 

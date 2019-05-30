@@ -31,7 +31,6 @@ exports.createFriendGroup = functions.database.ref('friendGroups/{FriendGroupID}
     .onCreate((snapshot) => {
         var groupID = snapshot.key;
         snapshot.forEach(function(child) {
-          var ref = child.after.ref.parent.parent.parent.parent.child(child.key).child('friendGroups').child(groupID);
-          ref.set(snapshot);
+          console.log(child.key)
         });
 });
