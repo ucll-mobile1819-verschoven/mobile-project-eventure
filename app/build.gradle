@@ -7,7 +7,7 @@ android {
             keyAlias 'Devs'
             keyPassword 'uclleventure'
 
-            storeFile file('D:/Users/Victor_Engelen/Documents/GitHub/mobile-project-eventure/eventure.jks')
+            storeFile file('C:/Users/Oli/Desktop/UCLL 18-19/Mobiele/mobile-project-eventure/eventure.jks')
             storePassword 'uclleventure'
         }
     }
