@@ -14,8 +14,24 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.updateAttendingUpCount = functions.database.ref('/Events/{eventID}/attending')
+exports.updateAttendingUpCount = functions.database.ref('/{TypeOfEvent}/{eventID}/attending')
     .onWrite((snapshot) => {
       const ref = snapshot.after.ref.parent.child('attendees');
       return ref.set(snapshot.after.numChildren());
+});
+
+exports.deleteFriend = functions.database.ref('admin/Users/{UserID}/friends/{FriendID}')
+    .onDelete((snapshot) => {
+        var deletedFriend = snapshot.key;
+        var delter = snapshot.ref.parent.parent.key;
+        return snapshot.ref.root.child('admin').child('Users').child(deletedFriend).child('friends').child(delter).remove();
+});
+
+exports.createFriendGroup = functions.database.ref('friendGroups/{FriendGroupID}')
+    .onCreate((snapshot) => {
+        var groupID = snapshot.key;
+        snapshot.forEach(function(child) {
+          var ref = child.after.ref.parent.parent.parent.parent.child(child.key).child('friendGroups').child(groupID);
+          ref.set(snapshot);
+        });
 });

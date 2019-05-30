@@ -107,40 +107,44 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void updateFirebaseGroup(String groupName){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
-                .child("Users").child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
+        FirebaseDatabase updateRef = FirebaseDatabase
+        DatabaseReference startRef = FirebaseDatabase.getInstance().getReference().child("friendGroups");
+        DatabaseReference ref = startRef.push();
         if(inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
             for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
-                ref.child(groupName).child(friend.getUserID()).setValue(friend);
+                ref.child(friend.getUserID()).setValue(friend);
             }
         } else {
-            Toast.makeText(getApplicationContext(), "else", Toast.LENGTH_LONG).show();
             ref.child(inviteFriendGroupNameAdapter.getSelectedList().get(0)).removeValue();
             for(Friend friend : createAndEditFriendGroupAdapter.getSelected()){
-                ref.child(groupName).child(friend.getUserID()).setValue(friend);
+                ref.child(friend.getUserID()).setValue(friend);
             }
         }
+
+        ref.child("friendGroupName").setValue(groupName);
+        ref.child("admin").setValue(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID());
 
         finish();
 
     }
 
     private void getFriendGroups(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
-                .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                 };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    friendGroupNames.add(dataSnapshot.getKey());
+                    Toast.makeText(getApplicationContext(), dataSnapshot.child("friendGroupName").getValue().toString(), Toast.LENGTH_LONG).show();
+                    friendGroupNames.add(dataSnapshot.child("friendGroupName").getValue().toString());
                     ArrayList<Friend> ids = new ArrayList<>();
                     for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        ids.add(dataSnapshot1.getValue(t));
+                        if(dataSnapshot1.getKey() != null && !dataSnapshot1.getKey().equals("friendGroupName") && !dataSnapshot1.getKey().equals("admin"))
+                            ids.add(dataSnapshot1.getValue(t));
                     }
 
-                    groups.put(dataSnapshot.getKey(), ids);
+                    groups.put(dataSnapshot.child("friendGroupName").getValue().toString(), ids);
                 }
 
                 getFriends();
