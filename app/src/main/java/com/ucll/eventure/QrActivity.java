@@ -86,9 +86,6 @@ public class QrActivity extends AppCompatActivity implements QRCodeReaderView.On
 
         Toast.makeText(getApplicationContext(), getString(R.string.friend_added), Toast.LENGTH_LONG).show();
 
-        //TODO: INCORPORATE ACCEPT BUTTON FRIEND LAYOUT
-        //TODO: IN OWN OBJECT THEN CHECK WHEN SOMEONE ACCEPT REUEST AND THEN DELETE THE NODE
-        //TODO: ADD TO OWN FRIENDS THEN
         finish();
     }
 

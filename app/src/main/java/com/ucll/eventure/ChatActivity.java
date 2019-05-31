@@ -109,7 +109,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private void displayMessages(){
         messageAdapter.notifyDataSetChanged();
-        Toast.makeText(getApplicationContext(), "made", Toast.LENGTH_LONG).show();
     }
 
     public void sendMessage(View view){

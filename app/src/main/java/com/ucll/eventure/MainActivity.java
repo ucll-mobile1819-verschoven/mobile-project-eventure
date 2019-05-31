@@ -43,5 +43,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
+
+    //TODO: Firebase messages to user notification chatactivity
+    //TODO: Firebase delete friend -> delete user out of groups AND their group node as well
 }
 
