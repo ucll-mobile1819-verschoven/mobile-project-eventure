@@ -19,6 +19,7 @@ import com.ucll.eventure.Adapters.InviteFriendAdapter;
 import com.ucll.eventure.Adapters.InviteFriendGroupNameAdapter;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.Friend;
+import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 
 import java.util.ArrayList;
@@ -29,10 +30,11 @@ public class InviteFriendsActivity extends AppCompatActivity {
     private HashMap<String, ArrayList<Friend>> groups;
     private ListView friendGroups;
     private ListView friendsListView;
-    private ArrayList<String> friendGroupNames;
+    private ArrayList<String> friendGroupNames,ids;
     private ArrayList<Friend> friendsUserHas;
     private InviteFriendAdapter inviteFriendAdapter;
     private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
+    private User me;
 
     private Event eventToDisplay;
 
@@ -46,32 +48,27 @@ public class InviteFriendsActivity extends AppCompatActivity {
         groups = new HashMap<>();
         friendGroupNames = new ArrayList<>();
         friendsUserHas = new ArrayList<>();
+        ids = new ArrayList<>();
+        me = new UserDatabase(getApplicationContext()).readFromFile();
 
         if (getIntent().getStringExtra("event") != null) {
             eventToDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
-            getFriendGroups();
+            getFriendGroupNames();
         }
     }
 
-    private void getFriendGroups() {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
-                .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
+    private void getFriendGroupNames() {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                .child("Users").child(me.getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
-                };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    friendGroupNames.add(dataSnapshot.getKey());
-                    ArrayList<Friend> ids = new ArrayList<>();
-                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        ids.add(dataSnapshot1.getValue(t));
-                    }
-
-                    groups.put(dataSnapshot.getKey(), ids);
+                    String groupID = dataSnapshot.getKey();
+                    ids.add(groupID);
                 }
 
-                getFriends();
+                getFriendGroups();
             }
 
             @Override
@@ -80,6 +77,44 @@ public class InviteFriendsActivity extends AppCompatActivity {
             }
 
         });
+
+    }
+
+    private void getFriendGroups(){
+        for(final String groupID : ids){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
+                    };
+                    ArrayList<Friend> ids = new ArrayList<>();
+                    String name = "";
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        if(dataSnapshot.getKey() != null){
+                            if(!dataSnapshot.getKey().equals("friendGroupName") && !dataSnapshot.getKey().equals("admin")){
+                                ids.add(dataSnapshot.getValue(t));
+                            }
+
+                            if(dataSnapshot.getKey().equals("friendGroupName")){
+                                name = dataSnapshot.getValue().toString();
+                            }
+                        }
+                    }
+
+                    friendGroupNames.add(name);
+                    groups.put(name, ids);
+                    getFriends();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            });
+        }
+
 
     }
 
@@ -95,7 +130,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
                     //ID, NAME
                     Friend friend = dataSnapshot.getValue(t);
 
-                    if (friend != null)
+                    if (friend != null && !contains(friend, friendsUserHas))
                         friendsUserHas.add(friend);
                 }
 
@@ -117,6 +152,18 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
         inviteFriendGroupNameAdapter = new InviteFriendGroupNameAdapter(getApplicationContext(), friendGroupNames, groups);
         friendGroups.setAdapter(inviteFriendGroupNameAdapter);
+    }
+
+    private boolean contains(Friend friendToCheck, ArrayList<Friend> friends) {
+        if(friendToCheck != null && friendToCheck.getUserID() != null) {
+            for (Friend friend : friends) {
+                if(friend != null && friend.getUserID() != null)
+                    if (friend.getUserID().equals(friendToCheck.getUserID()))
+                        return true;
+            }
+        }
+
+        return false;
     }
 
     public void submitInvites(View view) {

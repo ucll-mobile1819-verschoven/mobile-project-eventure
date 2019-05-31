@@ -20,7 +20,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -29,6 +28,7 @@ import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class FriendsAdapter extends BaseAdapter {
@@ -36,6 +36,8 @@ public class FriendsAdapter extends BaseAdapter {
     private List<Friend> friends;
     private Context context;
     private User me;
+    private ArrayList<String> ids;
+    private DatabaseReference ref;
 
     public FriendsAdapter(Context context, List<Friend> friends, User me){
         this.friends = friends; this.context=context; this.me = me;
@@ -125,7 +127,7 @@ public class FriendsAdapter extends BaseAdapter {
                             ref.removeValue();
                             friends.remove(toDisplay);
                             notifyDataSetChanged();
-                            removeFriendFromGroups(toDisplay);
+                            getFriendGroupNames(toDisplay);
                         } else {
                             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(me.getDatabaseID()).child(toDisplay.getUserID());
                             ref.removeValue();
@@ -156,23 +158,45 @@ public class FriendsAdapter extends BaseAdapter {
         context.startActivity(i);
     }
 
-    private void removeFriendFromGroups(final Friend friend) {
-        final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
-                .child(me.getDatabaseID()).child("friendGroups");
+    private void getFriendGroups(final Friend friend){
+        for(final String groupID : ids){
+            ref = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        if(dataSnapshot.getKey() != null){
+                            if(!dataSnapshot.getKey().equals(friend.getUserID())){
+                                ref.child(dataSnapshot.getKey()).removeValue();
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(context, databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            });
+        }
+
+
+    }
+
+    private void getFriendGroupNames(final Friend friend){
+        ids = new ArrayList<>();
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                .child("Users").child(me.getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
-                };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        Friend x = dataSnapshot1.getValue(t);
-                        if(x.getUserID().equals(friend.getUserID())){
-                            ref.child(dataSnapshot.getKey()).child(x.getUserID()).removeValue();
-                        }
-                        break;
-                    }
+                    String groupID = dataSnapshot.getKey();
+                    ids.add(groupID);
                 }
+
+                getFriendGroups(friend);
             }
 
             @Override

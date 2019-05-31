@@ -181,11 +181,9 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                     };
-                    Log.d("myspecialtag", snapshot.toString());
                     ArrayList<Friend> ids = new ArrayList<>();
                     String name = "";
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Log.d("myspecialtag", dataSnapshot.toString());
                         if(dataSnapshot.getKey() != null){
                             if(!dataSnapshot.getKey().equals("friendGroupName") && !dataSnapshot.getKey().equals("admin")){
                                 ids.add(dataSnapshot.getValue(t));
@@ -193,7 +191,6 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
 
                             if(dataSnapshot.getKey().equals("friendGroupName")){
                                 name = dataSnapshot.getValue().toString();
-                                Toast.makeText(getApplicationContext(), name, Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -201,7 +198,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                     friendGroupNames.add(name);
                     groupIDs.put(name, groupID);
                     groups.put(name, ids);
-
+                    getFriends();
                 }
 
                 @Override
@@ -212,7 +209,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
             });
         }
 
-        getFriends();
+
     }
 
     private void getFriendGroupNames(){
@@ -224,8 +221,6 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     String groupID = dataSnapshot.getKey();
                     ids.add(groupID);
-
-                    Log.d("myTagggs", groupID);
                 }
 
                 getFriendGroups();
@@ -249,7 +244,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                 };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    if(!friendsUserHas.contains(dataSnapshot.getValue(t)))
+                    if(!contains(dataSnapshot.getValue(t), friendsUserHas))
                         friendsUserHas.add(dataSnapshot.getValue(t));
                 }
 
@@ -263,6 +258,18 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
 
         });
 
+    }
+
+    private boolean contains(Friend friendToCheck, ArrayList<Friend> friends) {
+        if(friendToCheck != null && friendToCheck.getUserID() != null) {
+            for (Friend friend : friends) {
+                if(friend != null && friend.getUserID() != null)
+                    if (friend.getUserID().equals(friendToCheck.getUserID()))
+                        return true;
+            }
+        }
+
+        return false;
     }
 
     private void display(){
