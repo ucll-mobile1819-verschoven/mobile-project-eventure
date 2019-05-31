@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -33,12 +34,14 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     private ListView friendsListView;
     private ArrayList<String> friendGroupNames;
     private ArrayList<Friend> friendsUserHas;
+    private HashMap<String, String> groupIDs;
+    private User me;
     private InviteFriendAdapter inviteFriendAdapter;
     private InviteFriendGroupNameAdapter inviteFriendGroupNameAdapter;
     private CreateAndEditFriendGroupAdapter createAndEditFriendGroupAdapter;
-    private HashMap<String, String> GroupNameID;
     private DatabaseReference deleteRef;
     private boolean editing;
+    private ArrayList<String> ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +53,12 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
         groups = new HashMap<>();
         friendGroupNames = new ArrayList<>();
         friendsUserHas = new ArrayList<>();
-        GroupNameID = new HashMap<>();
+        groupIDs = new HashMap<>();
+        ids = new ArrayList<>();
 
+        me = new UserDatabase(getApplicationContext()).readFromFile();
         editing = false;
-        getFriendGroups();
+        getFriendGroupNames();
     }
 
     @Override
@@ -84,10 +89,9 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void setLayoutSelectedFriends(){
-        final User me = new UserDatabase(getApplicationContext()).readFromFile();
         final Context context = this;
         if(!inviteFriendGroupNameAdapter.getSelectedList().isEmpty()){
-            String groupID = GroupNameID.get(inviteFriendGroupNameAdapter.getSelectedList().get(0));
+            String groupID = groupIDs.get(inviteFriendGroupNameAdapter.getSelectedList().get(0));
 
             deleteRef = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
             DatabaseReference updateRef = deleteRef.child("admin");
@@ -129,10 +133,6 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     public void createNewFriendGroup(View v){
-        //TODO: Set new adapter with delete option!
-        //TODO: Get members & name
-        //TODO: UPDATE EVERYTHING IN DATABASE
-
         EditText groupname = findViewById(R.id.group_nametext);
 
         if(groupname != null){
@@ -174,26 +174,61 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
     }
 
     private void getFriendGroups(){
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups");
+        for(final String groupID : ids){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
+                    };
+                    Log.d("myspecialtag", snapshot.toString());
+                    ArrayList<Friend> ids = new ArrayList<>();
+                    String name = "";
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Log.d("myspecialtag", dataSnapshot.toString());
+                        if(dataSnapshot.getKey() != null){
+                            if(!dataSnapshot.getKey().equals("friendGroupName") && !dataSnapshot.getKey().equals("admin")){
+                                ids.add(dataSnapshot.getValue(t));
+                            }
+
+                            if(dataSnapshot.getKey().equals("friendGroupName")){
+                                name = dataSnapshot.getValue().toString();
+                                Toast.makeText(getApplicationContext(), name, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }
+
+                    friendGroupNames.add(name);
+                    groupIDs.put(name, groupID);
+                    groups.put(name, ids);
+
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            });
+        }
+
+        getFriends();
+    }
+
+    private void getFriendGroupNames(){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                .child("Users").child(me.getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
-                };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String groupID = dataSnapshot.getKey();
+                    ids.add(groupID);
 
-                    friendGroupNames.add(dataSnapshot.child("friendGroupName").getValue().toString());
-                    ArrayList<Friend> ids = new ArrayList<>();
-                    for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
-                        if(dataSnapshot1.getKey() != null && !dataSnapshot1.getKey().equals("friendGroupName") && !dataSnapshot1.getKey().equals("admin"))
-                            ids.add(dataSnapshot1.getValue(t));
-                    }
-
-                    groups.put(dataSnapshot.child("friendGroupName").getValue().toString(), ids);
-                    GroupNameID.put(dataSnapshot.child("friendGroupName").getValue().toString(), dataSnapshot.getKey());
+                    Log.d("myTagggs", groupID);
                 }
 
-                getFriends();
+                getFriendGroups();
             }
 
             @Override
@@ -214,8 +249,8 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                 };
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    //ID, NAME
-                    friendsUserHas.add(dataSnapshot.getValue(t));
+                    if(!friendsUserHas.contains(dataSnapshot.getValue(t)))
+                        friendsUserHas.add(dataSnapshot.getValue(t));
                 }
 
                 display();

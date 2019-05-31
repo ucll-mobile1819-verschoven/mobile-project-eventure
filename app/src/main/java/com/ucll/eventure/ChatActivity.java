@@ -114,7 +114,17 @@ public class ChatActivity extends AppCompatActivity {
 
     public void sendMessage(View view){
         if(!messageFied.getText().toString().isEmpty()){
-            Message message = new Message(me.getDatabaseID(), false, messageFied.getText().toString());
+            String[] index = chatID.split("_");
+            String receiver = "";
+            if(!index[0].equals(me.getDatabaseID())){
+                receiver = index[0];
+            } else {
+                if(!index[1].equals(me.getDatabaseID())){
+                    receiver = index[1];
+                }
+            }
+
+            Message message = new Message(me.getDatabaseID(), false, messageFied.getText().toString(), receiver);
             messageFied.setText("");
 
             if(!hasMessages){

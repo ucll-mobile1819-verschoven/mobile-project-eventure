@@ -33,6 +33,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import com.ucll.eventure.Adapters.FriendsAdapter;
 import com.ucll.eventure.Data.Friend;
+import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.CreateAndEditFriendGroupsActivity;
 import com.ucll.eventure.QrActivity;
@@ -51,6 +52,7 @@ public class FriendsFragment extends Fragment {
     private ArrayList<Friend> filtered;
     private EditText searchText;
     private FriendsAdapter adapter;
+    private User me;
 
 
     // Database Var
@@ -142,15 +144,13 @@ public class FriendsFragment extends Fragment {
     }
 
     private void getFriends() {
-        Log.d("getFriendsTag", "getFriends has been called");
         if (getActivity() == null) {
-            Log.d("getFriendsTag", "getactivity is null");
-            Toast.makeText(context, "ID NOT GET", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "ID NOT GOTTEN", Toast.LENGTH_LONG).show();
         } else {
-            Log.d("getFriendsTag", "we are in else");
             friends = new ArrayList<>();
             friends.clear();
-            adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+            me = new UserDatabase(getContext()).readFromFile();
+            adapter = new FriendsAdapter(context, friends, me);
             friendsList.setAdapter(adapter);
             firebase = FirebaseDatabase
                     .getInstance()
@@ -165,17 +165,18 @@ public class FriendsFragment extends Fragment {
             firebase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    friends.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        Log.d("getFriendsTag", snapshot.toString());
                         GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                         };
                         if (snapshot != null) {
                             Friend friend = snapshot.getValue(t);
-                            Log.d("testmebitchGFriends", friend.getName());
-                            if (!contains(friend, friends) && friend != null) {
+                            Log.d("myTestTag", friend.getName());
+                            if (friend != null && !contains(friend, friends)) {
                                 friends.add(friend);
                             }
-                            Log.d("testmebitchGFriends", String.valueOf(friends.size()));
+                            Log.d("myTestTag", String.valueOf(friends.size()));
                         }
                     }
 
@@ -206,16 +207,17 @@ public class FriendsFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Log.d("getFriendsTag", snapshot.toString());
+                    Log.d("myTestTag", "we are in the forL");
                     GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                     };
                     if (snapshot != null) {
                         Friend friend = snapshot.getValue(t);
-                        Log.d("testmebitchGInvites", friend.getName());
+                        Log.d("myTestTag", friend.getName());
                         if (!contains(friend, friends) && friend != null) {
                             friends.add(friend);
                         }
-                        Log.d("testmebitchGInvites", friend.getName());
+                        Log.d("myTestTag", friend.getName());
+                        Log.d("myTestTag", "end");
                     }
                 }
 
@@ -254,7 +256,7 @@ public class FriendsFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if(isAdded()){
-                    FriendsAdapter adapter = new FriendsAdapter(context, filtered, getLayoutInflater());
+                    FriendsAdapter adapter = new FriendsAdapter(context, filtered, me);
                     friendsList.setAdapter(adapter);
                     for (Friend friend : friends) {
                         if (friend.getName().toLowerCase().contains(s.toString().toLowerCase()))
@@ -264,7 +266,7 @@ public class FriendsFragment extends Fragment {
 
                     if(s.toString().isEmpty()) {
                         filtered = new ArrayList<>();
-                        adapter = new FriendsAdapter(context, friends, getLayoutInflater());
+                        adapter = new FriendsAdapter(context, friends, me);
                         friendsList.setAdapter(adapter);
                     }
 

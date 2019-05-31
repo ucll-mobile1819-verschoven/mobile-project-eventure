@@ -6,13 +6,11 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,22 +27,18 @@ import com.google.firebase.storage.StorageReference;
 import com.ucll.eventure.ChatActivity;
 import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.User;
-import com.ucll.eventure.Data.UserDatabase;
-import com.ucll.eventure.MapsActivity;
 import com.ucll.eventure.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 public class FriendsAdapter extends BaseAdapter {
 
     private List<Friend> friends;
     private Context context;
-    private LayoutInflater inflater;
+    private User me;
 
-    public FriendsAdapter(Context context, List<Friend> friends, LayoutInflater inflater){
-        this.friends = friends; this.context=context; this.inflater=inflater;
+    public FriendsAdapter(Context context, List<Friend> friends, User me){
+        this.friends = friends; this.context=context; this.me = me;
     }
 
 
@@ -85,11 +79,9 @@ public class FriendsAdapter extends BaseAdapter {
 
         final TextView userName = vi.findViewById(R.id.user_name);
         final ImageView checkmark = vi.findViewById(R.id.checkMark);
-        final LinearLayout friend = vi.findViewById(R.id.friend);
 
         if(friends.get(i) != null){
             final Friend toDisplay = friends.get(i);
-            final User me = new UserDatabase(context).readFromFile();
 
             if(toDisplay != null && toDisplay.getAccepted() != null ){
                 if(toDisplay.getAccepted()){
@@ -165,7 +157,6 @@ public class FriendsAdapter extends BaseAdapter {
     }
 
     private void removeFriendFromGroups(final Friend friend) {
-        final User me = new UserDatabase(context).readFromFile();
         final DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
                 .child(me.getDatabaseID()).child("friendGroups");
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
