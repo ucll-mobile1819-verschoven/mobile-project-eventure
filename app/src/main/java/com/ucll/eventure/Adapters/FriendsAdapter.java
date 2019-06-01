@@ -28,7 +28,7 @@ import java.util.List;
 
 public class FriendsAdapter extends BaseAdapter {
 
-    private List<Friend> friends;
+    public List<Friend> friends;
     private Context context;
     private User me;
 
@@ -127,9 +127,8 @@ public class FriendsAdapter extends BaseAdapter {
                             DatabaseReference ref2 = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(me.getDatabaseID()).child("friends").child(toDisplay.getUserID());
                             ref2.setValue(toDisplay);
                             DatabaseReference ref3 = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(toDisplay.getUserID()).child(me.getDatabaseID());
-                            ref3.child("name").setValue(me.getName());
-                            ref3.child("userID").setValue(me.getDatabaseID());
-                            ref3.child("accepted").setValue(true);
+                            Friend x = new Friend(me.getDatabaseID(), me.getName(), true);
+                            ref3.setValue(x);
                             checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
 
                         }

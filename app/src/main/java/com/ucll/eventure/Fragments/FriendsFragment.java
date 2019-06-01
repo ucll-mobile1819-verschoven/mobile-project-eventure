@@ -104,6 +104,7 @@ public class FriendsFragment extends Fragment {
         searchText = getView().findViewById(R.id.SearchText);
         if (friendsList != null && qr != null && friendGroups != null && nothingToSee != null && arrowDown != null && searchText != null) {
             getFriends();
+            getInvites();
             qr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -174,14 +175,14 @@ public class FriendsFragment extends Fragment {
                             Friend friend = snapshot.getValue(t);
                             Log.d("myTestTag", friend.getName());
                             if (friend != null && !contains(friend, friends)) {
-                                friends.add(friend);
+                                adapter.friends.add(friend);
+                                adapter = new FriendsAdapter(context, friends, me);
+                                friendsList.setAdapter(adapter);
+                                adapter.notifyDataSetChanged();
+                                Log.d("myTestTag", String.valueOf(adapter.getCount()));
                             }
                             Log.d("myTestTag", String.valueOf(friends.size()));
                         }
-                    }
-
-                    if (friends != null) {
-                        getInvites();
                     }
                 }
 
@@ -203,21 +204,18 @@ public class FriendsFragment extends Fragment {
                 .child(new UserDatabase(context).readFromFile().getDatabaseID());
 
 
-        firebase.addValueEventListener(new ValueEventListener() {
+        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Log.d("myTestTag", "we are in the forL");
                     GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                     };
                     if (snapshot != null) {
                         Friend friend = snapshot.getValue(t);
-                        Log.d("myTestTag", friend.getName());
                         if (!contains(friend, friends) && friend != null) {
                             friends.add(friend);
+                            adapter.notifyDataSetChanged();
                         }
-                        Log.d("myTestTag", friend.getName());
-                        Log.d("myTestTag", "end");
                     }
                 }
 
@@ -288,11 +286,8 @@ public class FriendsFragment extends Fragment {
             friendsList.setVisibility(View.GONE);
             arrowDown.setVisibility(View.VISIBLE);
 
-        } else {
-            Log.d("getFriendsTag", "we are in showfriends");
-            if (isAdded()) {
-                adapter.notifyDataSetChanged();
-            }
         }
+
+        Toast.makeText(context, String.valueOf(friendsList.getVisibility()), Toast.LENGTH_LONG).show();
     }
 }

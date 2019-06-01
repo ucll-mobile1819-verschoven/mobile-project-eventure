@@ -22,6 +22,7 @@ import com.github.sumimakito.awesomeqr.option.RenderOption;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 
@@ -72,9 +73,9 @@ public class QrActivity extends AppCompatActivity implements QRCodeReaderView.On
     public void onQRCodeRead(String text, PointF[] points) {
         User me = new UserDatabase(getApplicationContext()).readFromFile();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("friendRequests").child(text).child(me.getDatabaseID());
-        reference.child("name").setValue(me.getName());
-        reference.child("userID").setValue(me.getDatabaseID());
-        reference.child("accepted").setValue(false);
+
+        Friend x = new Friend(me.getDatabaseID(), me.getName(), false);
+        reference.setValue(x);
 
         Toast.makeText(getApplicationContext(), getString(R.string.friend_added), Toast.LENGTH_LONG).show();
 
