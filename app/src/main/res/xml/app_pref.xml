@@ -23,6 +23,7 @@
     <com.ucll.eventure.Preferences.MyPreferenceCategory android:title="@string/other">
         <SwitchPreference
             android:key="notifications"
+            android:enabled="true"
             android:title="@string/notifications" />
         <Preference android:title="@string/delete_account"
         android:key="delete"

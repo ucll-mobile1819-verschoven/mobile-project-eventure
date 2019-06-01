@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,9 +31,6 @@ import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.Preferences.EditTextPreference;
 import com.ucll.eventure.Preferences.EditTextPreferenceListener;
-
-import java.util.Iterator;
-import java.util.Map;
 
 public class SettingsActivity extends PreferenceActivity implements Preference.OnPreferenceChangeListener {
     private AppCompatDelegate mDelegate;
@@ -85,6 +81,10 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
             });
 
             SwitchPreference notification = (SwitchPreference)findPreference("notifications");
+            notification.setEnabled(true);
+            Boolean notificationB = Boolean.valueOf(PreferenceManager.getDefaultSharedPreferences(this).getString("MYNOTIFICATIONS", "true"));
+
+            notification.setChecked(notificationB);
             notification.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {

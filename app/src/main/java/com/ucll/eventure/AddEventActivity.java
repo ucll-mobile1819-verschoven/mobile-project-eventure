@@ -4,8 +4,6 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
-import android.annotation.*;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,15 +21,12 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.gson.Gson;
 import com.ucll.eventure.Data.Event;
 import com.ucll.eventure.Data.GoingDatabase;
 import com.ucll.eventure.Data.UserDatabase;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -201,7 +196,7 @@ public class AddEventActivity extends AppCompatActivity {
                 !country_and_city.isEmpty() && !street_and_number.isEmpty() && !start_time.isEmpty() && !end_time.isEmpty() && !visibility.getSelectedItem().toString().equals("Choose who the event will be visible for")) {
             if (validCountryAndCity(country_and_city) && validStreetAndNumber(street_and_number) && validTime(start_time, end_time)) {
                 checkBeforesubmitToDatabase(new Event("eventID", new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID(), event_Title,
-                        short_description, long_description, country_and_city + ", " + street_and_number, start_time, end_time, 0, false));
+                        short_description, long_description, country_and_city + ", " + street_and_number, start_time, end_time, 1, false));
             } else {
                 Toast.makeText(getApplicationContext(), "The format of your input is incorrect, please follow the hints", Toast.LENGTH_LONG).show();
             }
@@ -378,7 +373,7 @@ public class AddEventActivity extends AppCompatActivity {
             if (starting.before(ending) && starting.after(now) && ending.after(now)) {
                 toReturn = true;
             } else {
-                Toast.makeText(getApplicationContext(), "The start should be before the end of your event", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Check Your Dates Please", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
 

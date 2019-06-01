@@ -7,7 +7,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -109,6 +108,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private void displayMessages(){
         messageAdapter.notifyDataSetChanged();
+        listView.setSelection(messageAdapter.getCount() - 1);
     }
 
     public void sendMessage(View view){
