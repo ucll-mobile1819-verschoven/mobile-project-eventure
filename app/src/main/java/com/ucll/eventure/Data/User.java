@@ -6,16 +6,18 @@ public class User {
     private String name;
     private String email;
     private String messageID;
+    private String regToken;
     private HashMap<String, Object> friends;
 
     public User() {
     }
 
-    public User(String databaseID, String name, String email, String messageID, HashMap<String, Object> friends) {
+    public User(String databaseID, String name, String email, String messageID, String regToken, HashMap<String, Object> friends) {
         this.databaseID = databaseID;
         this.name = name;
         this.email = email;
         this.messageID = messageID;
+        this.regToken = regToken;
         this.friends = friends;
     }
 
@@ -49,6 +51,14 @@ public class User {
 
     public void setMessageID(String messageID) {
         this.messageID = messageID;
+    }
+
+    public String getRegToken() {
+        return regToken;
+    }
+
+    public void setRegToken(String regToken) {
+        this.regToken = regToken;
     }
 
     public HashMap<String, Object> getFriends() {

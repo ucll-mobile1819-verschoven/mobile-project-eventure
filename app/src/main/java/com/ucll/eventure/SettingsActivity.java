@@ -149,7 +149,6 @@ public class SettingsActivity extends PreferenceActivity implements Preference.O
     private void editPic(){
         Intent i = new Intent(SettingsActivity.this, SelectImage.class);
         startActivity(i);
-        finish();
     }
 
     public void goBack(View view){

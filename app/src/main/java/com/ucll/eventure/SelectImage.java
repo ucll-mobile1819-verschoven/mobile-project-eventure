@@ -1,11 +1,13 @@
 package com.ucll.eventure;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -36,7 +38,7 @@ public class SelectImage extends AppCompatActivity implements IPickResult {
             public void onCancelClick() {
                 goBack();
             }
-        }).show(getSupportFragmentManager());
+        }).show(getSupportFragmentManager()).setCancelable(false);
     }
 
     @Override
@@ -45,6 +47,12 @@ public class SelectImage extends AppCompatActivity implements IPickResult {
             finish();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("mylog", "Back button pressed!");
+        //your code to go to previous
     }
 
     @Override
@@ -85,8 +93,6 @@ public class SelectImage extends AppCompatActivity implements IPickResult {
     }
 
     private void goBack(){
-        Intent i = new Intent(SelectImage.this, SettingsActivity.class);
-        startActivity(i);
         finish();
     }
 }

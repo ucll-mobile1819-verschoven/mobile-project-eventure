@@ -373,8 +373,9 @@ public class AddEventActivity extends AppCompatActivity {
             DateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             Date starting = format.parse(start);
             Date ending = format.parse(end);
+            Date now = new Date();
 
-            if (starting.before(ending)) {
+            if (starting.before(ending) && starting.after(now) && ending.after(now)) {
                 toReturn = true;
             } else {
                 Toast.makeText(getApplicationContext(), "The start should be before the end of your event", Toast.LENGTH_LONG).show();

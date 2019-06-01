@@ -14,6 +14,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -158,6 +160,12 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        Log.d("mylog", "Back button pressed!");
+        //your code to go to previous
+    }
+
     /**
      * Switches to the mainactivity of the application
      */
@@ -171,7 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirstTimeLaunchedManager firstTimeLaunchedManager = new FirstTimeLaunchedManager(getApplicationContext());
                 if (firstTimeLaunchedManager.isFirstTimeLaunch()) {
                     if (currentUser != null) {
-                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, new HashMap<String, Object>());
+                        final User toCreate = new User(currentUser.getUid(), currentUser.getDisplayName(), currentUser.getEmail(), deviceToken, "",new HashMap<String, Object>());
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users").child(currentUser.getUid());
                         ref.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -278,7 +286,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void goToPolicy(View v) {
-        Toast.makeText(getApplicationContext(), "To Be Implemented", Toast.LENGTH_LONG).show();
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://policies.google.com/privacy?hl=en-US"));
+        startActivity(browserIntent);
     }
+
 
 }
