@@ -152,7 +152,7 @@ public class FriendsFragment extends Fragment {
             friends.clear();
             me = new UserDatabase(getContext()).readFromFile();
             adapter = new FriendsAdapter(context, friends, me);
-            friendsList.setAdapter(adapter);
+            //friendsList.setAdapter(adapter);
             firebase = FirebaseDatabase
                     .getInstance()
                     .getReference()
@@ -176,9 +176,8 @@ public class FriendsFragment extends Fragment {
                             Log.d("myTestTag", friend.getName());
                             if (friend != null && !contains(friend, friends)) {
                                 adapter.friends.add(friend);
-                                adapter = new FriendsAdapter(context, friends, me);
-                                friendsList.setAdapter(adapter);
-                                adapter.notifyDataSetChanged();
+                                //friendsList.setAdapter(adapter);
+                                //adapter.notifyDataSetChanged();
                                 Log.d("myTestTag", String.valueOf(adapter.getCount()));
                             }
                             Log.d("myTestTag", String.valueOf(friends.size()));
@@ -287,7 +286,5 @@ public class FriendsFragment extends Fragment {
             arrowDown.setVisibility(View.VISIBLE);
 
         }
-
-        Toast.makeText(context, String.valueOf(friendsList.getVisibility()), Toast.LENGTH_LONG).show();
     }
 }
