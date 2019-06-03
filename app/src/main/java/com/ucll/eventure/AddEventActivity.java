@@ -21,11 +21,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 import com.google.gson.Gson;
 import com.ucll.eventure.Data.Event;
+import com.ucll.eventure.Data.Friend;
 import com.ucll.eventure.Data.GoingDatabase;
+import com.ucll.eventure.Data.User;
 import com.ucll.eventure.Data.UserDatabase;
 
 import java.text.DateFormat;
@@ -45,12 +48,16 @@ public class AddEventActivity extends AppCompatActivity {
     private Event toDisplay;
     private ArrayList<String> oldInvitees;
     private ArrayList<String> oldAttanding;
+    private User me;
+    private ArrayList<String> ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
         groups = new HashMap<>();
+        me = new UserDatabase(getApplicationContext()).readFromFile();
+        ids = new ArrayList<>();
 
         if (getIntent().getStringExtra("mode") != null) {
             String mode = getIntent().getStringExtra("mode");
@@ -58,7 +65,7 @@ public class AddEventActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("event") != null) {
                     toDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
                     setupView();
-                    getFriendGroups(getApplicationContext());
+                    getFriendGroupNames();
                     setTexts();
                 } else {
                     Toast.makeText(getApplicationContext(), getString(R.string.wrong), Toast.LENGTH_LONG).show();
@@ -66,7 +73,7 @@ public class AddEventActivity extends AppCompatActivity {
             } else {
                 if (mode.equals("new")) {
                     setupView();
-                    getFriendGroups(getApplicationContext());
+                    getFriendGroupNames();
                 }
             }
         }
@@ -153,29 +160,65 @@ public class AddEventActivity extends AppCompatActivity {
         visibilityOptions.add("Public");
     }
 
-    private void getFriendGroups(final Context context) {
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin").child("Users")
-                .child(new UserDatabase(getApplicationContext()).readFromFile().getDatabaseID()).child("friendGroups");
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NotNull DataSnapshot snapshot) {
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    visibilityOptions.add(dataSnapshot.getKey());
+    private void getFriendGroups(){
+        final Context context = this;
+        for(final String groupID : ids){
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
+                    };
                     ArrayList<String> ids = new ArrayList<>();
-                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                        ids.add(dataSnapshot1.getKey());
+                    String name = "";
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        if(dataSnapshot.getKey() != null){
+                            if(!dataSnapshot.getKey().equals("friendGroupName") && !dataSnapshot.getKey().equals("admin")){
+                                ids.add(dataSnapshot.getValue(t).getName());
+                            }
+
+                            if(dataSnapshot.getKey().equals("friendGroupName")){
+                                name = dataSnapshot.getValue().toString();
+                                visibilityOptions.add(name);
+                            }
+                        }
+
+                        groups.put(dataSnapshot.getKey(), ids);
                     }
 
-                    groups.put(dataSnapshot.getKey(), ids);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
+                            android.R.layout.simple_spinner_item, visibilityOptions);
+                    visibility.setAdapter(adapter);
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
-                        android.R.layout.simple_spinner_item, visibilityOptions);
-                visibility.setAdapter(adapter);
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            });
+        }
+
+
+    }
+
+    private void getFriendGroupNames(){
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                .child("Users").child(me.getDatabaseID()).child("friendGroups");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                    String groupID = dataSnapshot.getKey();
+                    ids.add(groupID);
+                }
+
+
+                getFriendGroups();
             }
 
             @Override
-            public void onCancelled(@NotNull DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
                 Toast.makeText(getApplicationContext(), databaseError.getMessage(), Toast.LENGTH_LONG).show();
             }
 

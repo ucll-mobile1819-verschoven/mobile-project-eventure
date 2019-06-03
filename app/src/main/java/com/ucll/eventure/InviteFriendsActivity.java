@@ -54,7 +54,6 @@ public class InviteFriendsActivity extends AppCompatActivity {
         if (getIntent().getStringExtra("event") != null) {
             eventToDisplay = new Gson().fromJson(getIntent().getStringExtra("event"), Event.class);
             getFriendGroupNames();
-            getFriends();
         }
     }
 
@@ -105,6 +104,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
                     friendGroupNames.add(name);
                     groups.put(name, ids);
+                    getFriends();
                 }
 
                 @Override
