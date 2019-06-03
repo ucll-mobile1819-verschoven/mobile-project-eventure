@@ -49,6 +49,7 @@ public class AddEventActivity extends AppCompatActivity {
     private ArrayList<String> oldInvitees;
     private ArrayList<String> oldAttanding;
     private User me;
+    private ArrayAdapter<String> adapter;
     private ArrayList<String> ids;
 
     @Override
@@ -158,6 +159,10 @@ public class AddEventActivity extends AppCompatActivity {
         visibilityOptions.add("Choose who the event will be visible for");
         visibilityOptions.add("Private");
         visibilityOptions.add("Public");
+
+         adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item, visibilityOptions);
+        visibility.setAdapter(adapter);
     }
 
     private void getFriendGroups(){
@@ -180,15 +185,14 @@ public class AddEventActivity extends AppCompatActivity {
                             if(dataSnapshot.getKey().equals("friendGroupName")){
                                 name = dataSnapshot.getValue().toString();
                                 visibilityOptions.add(name);
+                                adapter.notifyDataSetChanged();
                             }
                         }
 
                         groups.put(dataSnapshot.getKey(), ids);
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
-                            android.R.layout.simple_spinner_item, visibilityOptions);
-                    visibility.setAdapter(adapter);
+
                 }
 
                 @Override

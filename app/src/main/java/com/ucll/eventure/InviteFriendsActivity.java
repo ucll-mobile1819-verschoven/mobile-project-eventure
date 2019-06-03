@@ -104,7 +104,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
                     friendGroupNames.add(name);
                     groups.put(name, ids);
-                    getFriends();
+
                 }
 
                 @Override
@@ -114,6 +114,8 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
             });
         }
+
+        getFriends();
 
 
     }

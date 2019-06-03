@@ -196,7 +196,7 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                     friendGroupNames.add(name);
                     groupIDs.put(name, groupID);
                     groups.put(name, ids);
-                    getFriends();
+
                 }
 
                 @Override
@@ -205,7 +205,11 @@ public class CreateAndEditFriendGroupsActivity extends AppCompatActivity {
                 }
 
             });
+
+
         }
+
+        getFriends();
 
 
     }
