@@ -22,7 +22,6 @@ import com.ucll.eventure.Data.UserDatabase;
 import com.ucll.eventure.Fragments.FriendsFragment;
 import com.ucll.eventure.Fragments.HomeFragment;
 import com.ucll.eventure.Fragments.PublicFragment;
-import com.ucll.eventure.Messaging.DBM;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(1);
         tabLayout.setupWithViewPager(viewPager);
-        new DBM(getApplicationContext());
         getDeviceToken();
     }
 

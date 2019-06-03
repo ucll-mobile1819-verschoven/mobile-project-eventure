@@ -43,16 +43,15 @@ import java.util.ArrayList;
 
 
 public class FriendsFragment extends Fragment {
-    // Android Layout
+    private View view;
     private ListView friendsList;
-    private ArrayList<Friend> friends;
     private Context context;
     private TextView nothingToSee;
     private ImageView arrowDown;
-    private ArrayList<Friend> filtered;
     private EditText searchText;
     private FriendsAdapter adapter;
     private User me;
+    private ArrayList<Friend> friendsArrayList, myFriends, invites, filtered;
 
 
     // Database Var
@@ -65,7 +64,7 @@ public class FriendsFragment extends Fragment {
          *      Create the View
          */
 
-        View view = inflater.inflate(R.layout.friends, container, false);
+        view = inflater.inflate(R.layout.friends, container, false);
         return view;
 
     }
@@ -80,31 +79,30 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        setHasOptionsMenu(false);
-        if (getView() != null) {
-            setupView();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setHasOptionsMenu(false);
-        if (getView() != null) {
-            setupView();
-        }
+        setupView();
     }
 
     private void setupView() {
-        nothingToSee = getView().findViewById(R.id.nothing_to_see);
-        arrowDown = getView().findViewById(R.id.arrow_down);
-        friendsList = getView().findViewById(R.id.friends_list);
-        Button qr = getView().findViewById(R.id.qrcode);
-        final Button friendGroups = getView().findViewById(R.id.friendgroups);
-        searchText = getView().findViewById(R.id.SearchText);
+        nothingToSee = view.findViewById(R.id.nothing_to_see);
+        arrowDown = view.findViewById(R.id.arrow_down);
+        friendsList = view.findViewById(R.id.friends_list);
+        Button qr = view.findViewById(R.id.qrcode);
+        final Button friendGroups = view.findViewById(R.id.friendgroups);
+        searchText = view.findViewById(R.id.SearchText);
+        friendsArrayList = new ArrayList<>();
+        friendsArrayList.clear();
+        myFriends = new ArrayList<>();
+        myFriends.clear();
+        invites = new ArrayList<>();
+        invites.clear();
+        me = new UserDatabase(getContext()).readFromFile();
+        adapter = new FriendsAdapter(context, friendsArrayList, me);
         if (friendsList != null && qr != null && friendGroups != null && nothingToSee != null && arrowDown != null && searchText != null) {
+
+            friendsList.setAdapter(adapter);
+
+
             getFriends();
-            getInvites();
             qr.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -118,19 +116,6 @@ public class FriendsFragment extends Fragment {
                     friendGroups();
                 }
             });
-        }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (getView() != null) {
-            setupView();
         }
     }
 
@@ -148,40 +133,40 @@ public class FriendsFragment extends Fragment {
         if (getActivity() == null) {
             Toast.makeText(context, "ID NOT GOTTEN", Toast.LENGTH_LONG).show();
         } else {
-            friends = new ArrayList<>();
-            friends.clear();
-            me = new UserDatabase(getContext()).readFromFile();
-            adapter = new FriendsAdapter(context, friends, me);
-            //friendsList.setAdapter(adapter);
             firebase = FirebaseDatabase
                     .getInstance()
                     .getReference()
-
                     .child("admin")
                     .child("Users")
-                    .child(new UserDatabase(context).readFromFile().getDatabaseID())
+                    .child(me.getDatabaseID())
                     .child("friends");
+
 
 
             firebase.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                    friends.clear();
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
-                        };
-                        if (snapshot != null) {
-                            Friend friend = snapshot.getValue(t);
-                            Log.d("myTestTag", friend.getName());
-                            if (friend != null && !contains(friend, friends)) {
-                                adapter.friends.add(friend);
-                                //friendsList.setAdapter(adapter);
-                                //adapter.notifyDataSetChanged();
-                                Log.d("myTestTag", String.valueOf(adapter.getCount()));
+                    myFriends.clear();
+                    if(!dataSnapshot.exists()){
+                        Log.d("myTestTag _ getF", "its cleared");
+                    } else {
+                        GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {};
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            if (snapshot != null) {
+                                Friend friend = snapshot.getValue(t);
+                                if (!contains(friend, myFriends) && friend != null) {
+                                    myFriends.add(friend);
+                                }
                             }
-                            Log.d("myTestTag", String.valueOf(friends.size()));
                         }
+                    }
+
+                    friendsArrayList.clear();
+                    friendsArrayList.addAll(myFriends);
+                    adapter.notifyDataSetChanged();
+                    if (friendsArrayList != null) {
+                        getInvites();
+                        //doTheRest();
                     }
                 }
 
@@ -195,32 +180,49 @@ public class FriendsFragment extends Fragment {
     }
 
     private void getInvites() {
-        DatabaseReference firebase = FirebaseDatabase
+        final DatabaseReference firebase = FirebaseDatabase
                 .getInstance()
                 .getReference()
 
                 .child("friendRequests")
-                .child(new UserDatabase(context).readFromFile().getDatabaseID());
+                .child(me.getDatabaseID());
 
 
-        firebase.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                invites.clear();
+                if(dataSnapshot.exists()){
                     GenericTypeIndicator<Friend> t = new GenericTypeIndicator<Friend>() {
                     };
-                    if (snapshot != null) {
-                        Friend friend = snapshot.getValue(t);
-                        if (!contains(friend, friends) && friend != null) {
-                            friends.add(friend);
-                            adapter.notifyDataSetChanged();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Log.d("getInvites", snapshot.toString());
+
+                        if (snapshot != null) {
+                            Friend friend = snapshot.getValue(t);
+                            if (!contains(friend, invites) && friend != null) {
+                                if(friend.getAccepted()){
+                                    firebase.child(friend.getUserID()).removeValue();
+                                    DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("admin")
+                                            .child("Users").child(me.getDatabaseID()).child("friends").child(friend.getUserID());
+                                    ref.setValue(friend);
+                                    friend.setAccepted(true);
+                                }
+                                invites.add(friend);
+                            }
                         }
                     }
-                }
 
-                if (friends != null) {
-                    showFriends();
+                    friendsArrayList.clear();
+                    friendsArrayList.addAll(myFriends);
+                    friendsArrayList.addAll(invites);
+                    Log.d("getInvites", String.valueOf(friendsArrayList.size()));
+                    Log.d("getInvites", String.valueOf(adapter.getCount()));
+                    adapter.notifyDataSetChanged();
+
+
                 }
+                    doTheRest();
             }
 
             @Override
@@ -229,6 +231,7 @@ public class FriendsFragment extends Fragment {
             }
         });
     }
+
 
     private boolean contains(Friend friendToCheck, ArrayList<Friend> friends) {
         if(friendToCheck != null && friendToCheck.getUserID() != null) {
@@ -242,7 +245,7 @@ public class FriendsFragment extends Fragment {
         return false;
     }
 
-    private void showFriends() {
+    private void doTheRest() {
         filtered = new ArrayList<>();
         searchText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -255,7 +258,7 @@ public class FriendsFragment extends Fragment {
                 if(isAdded()){
                     FriendsAdapter adapter = new FriendsAdapter(context, filtered, me);
                     friendsList.setAdapter(adapter);
-                    for (Friend friend : friends) {
+                    for (Friend friend : friendsArrayList) {
                         if (friend.getName().toLowerCase().contains(s.toString().toLowerCase()))
                             if(!filtered.contains(friend))
                                 filtered.add(friend);
@@ -263,7 +266,7 @@ public class FriendsFragment extends Fragment {
 
                     if(s.toString().isEmpty()) {
                         filtered = new ArrayList<>();
-                        adapter = new FriendsAdapter(context, friends, me);
+                        adapter = new FriendsAdapter(context, friendsArrayList, me);
                         friendsList.setAdapter(adapter);
                     }
 
@@ -277,7 +280,8 @@ public class FriendsFragment extends Fragment {
 
             }
         });
-        if (friends.size() < 1) {
+
+        if (friendsArrayList.size() < 1) {
             Typeface custom_font = ResourcesCompat.getFont(getContext(), R.font.font);
             nothingToSee.setTypeface(custom_font);
             nothingToSee.setVisibility(View.VISIBLE);
@@ -285,6 +289,11 @@ public class FriendsFragment extends Fragment {
             friendsList.setVisibility(View.GONE);
             arrowDown.setVisibility(View.VISIBLE);
 
+        } else {
+            nothingToSee.setVisibility(View.GONE);
+
+            friendsList.setVisibility(View.VISIBLE);
+            arrowDown.setVisibility(View.GONE);
         }
     }
 }

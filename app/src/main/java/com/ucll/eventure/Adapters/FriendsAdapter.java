@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -81,6 +82,8 @@ public class FriendsAdapter extends BaseAdapter {
             if(toDisplay != null && toDisplay.getAccepted() != null ){
                 if(toDisplay.getAccepted()){
                     checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.delete_bin));
+                } else {
+                    checkmark.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.check));
                 }
 
                 StorageReference httpsReference = FirebaseStorage.getInstance().getReference().child("profilePictures").child(toDisplay.getUserID()).child("profile_picture.jpg");
