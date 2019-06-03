@@ -81,6 +81,9 @@ public class InviteFriendsActivity extends AppCompatActivity {
     }
 
     private void getFriendGroups(){
+        if(ids.isEmpty())
+            getFriends();
+
         for(final String groupID : ids){
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("friendGroups").child(groupID);
             ref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -104,7 +107,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
 
                     friendGroupNames.add(name);
                     groups.put(name, ids);
-
+                    getFriends();
                 }
 
                 @Override
@@ -115,7 +118,7 @@ public class InviteFriendsActivity extends AppCompatActivity {
             });
         }
 
-        getFriends();
+
 
 
     }
