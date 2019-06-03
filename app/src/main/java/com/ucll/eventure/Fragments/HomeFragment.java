@@ -155,7 +155,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getPrivateEvents() {
-        if (getActivity() == null) {
+        if (getActivity() == null && isAdded()) {
             Toast.makeText(context, getString(R.string.wrong), Toast.LENGTH_LONG).show();
         } else {
             myOtherEvents = new ArrayList<>();
@@ -294,8 +294,8 @@ public class HomeFragment extends Fragment {
         Log.d("interest", "called");
         load.setVisibility(View.GONE);
 
-        if(myOtherEvents.isEmpty() && myAttendingEvents.isEmpty()){
-            Typeface custom_font = ResourcesCompat.getFont(getContext(), R.font.font);
+        if(myOtherEvents.isEmpty() && myAttendingEvents.isEmpty() && context != null){
+            Typeface custom_font = ResourcesCompat.getFont(context, R.font.font);
             empty.setTypeface(custom_font);
             empty.setVisibility(View.VISIBLE);
 

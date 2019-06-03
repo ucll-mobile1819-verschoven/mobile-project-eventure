@@ -174,8 +174,10 @@ public class InviteFriendsActivity extends AppCompatActivity {
             node = "PrivateEvents";
         }
 
+        ArrayList<Friend> selectedFriends = new ArrayList<>();
+        if(inviteFriendAdapter.getSelectedList() != null)
+            selectedFriends = inviteFriendAdapter.getSelectedList();
 
-        ArrayList<Friend> selectedFriends = inviteFriendAdapter.getSelectedList();
         Log.d("myFreeTime", String.valueOf(selectedFriends.size()));
         for (Friend invitee : selectedFriends) {
             submitInvitesToDatabase(invitee, node);

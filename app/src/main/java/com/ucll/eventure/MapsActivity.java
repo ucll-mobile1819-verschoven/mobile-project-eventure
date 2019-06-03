@@ -135,7 +135,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             eventTitle.setText(eventToDisplay.getEventTitle());
             eventDescription.setText(eventToDisplay.getLongDescription());
             startTime.setText(eventToDisplay.getStartTime());
-            Log.d("mystarttime", eventToDisplay.getStartTime());
             endTime.setText(eventToDisplay.getEndTime());
             attendingcount.setText(String.valueOf(eventToDisplay.getAttendees()));
             signedUp = false;
